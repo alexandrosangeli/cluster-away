@@ -14,6 +14,9 @@ set -e # fail fast
 
 source /home/${USER}/miniconda3/bin/activate molearn
 
+export MOLEARN_PATH=/home/${USER}/repos/molearn
+python3 -m pip install "$MOLEARN_PATH"
+
 dt=$(date '+%d_%m_%y_%H_%M');
 echo "I am job ${SLURM_JOB_ID}"
 echo "I'm running on ${SLURM_JOB_NODELIST}"
