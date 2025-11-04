@@ -6,7 +6,7 @@
 #SBATCH -n 1	  # tasks requested
 #SBATCH --gres=gpu:1  # use 1 GPU
 #SBATCH --mem=14000  # memory in Mb
-#SBATCH --partition=ILCC_GPU
+#SBATCH --partition=PGR-Standard
 #SBATCH -t 2:00:00  # time requested in hour:minute:seconds
 #SBATCH --cpus-per-task=4
 
@@ -47,6 +47,8 @@ python3 src/drifts_experiment.py \
 OUTPUT_HOME=${PWD}/plots/
 mkdir -p ${OUTPUT_HOME}
 rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
+
+rm -rf ${OUTPUT_DIR}
 
 echo "Job is done"
 exit 0

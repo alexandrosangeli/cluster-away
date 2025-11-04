@@ -97,6 +97,7 @@ def main():
 
     plot_drifting(z=endings['encodings'], num_iters=num_iters)
 
+    print("Script complete. Exiting.")
     return 0
 
 if __name__ == "__main__":
