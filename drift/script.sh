@@ -12,7 +12,7 @@
 
 set -e # fail fast
 
-source /home/${USER}/miniconda/bin/activate molearn
+source /home/${USER}/miniconda3/bin/activate molearn
 
 dt=$(date '+%d_%m_%y_%H_%M');
 echo "I am job ${SLURM_JOB_ID}"
