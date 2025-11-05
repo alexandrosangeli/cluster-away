@@ -2,7 +2,7 @@ from utils import get_data, decode_encode, batched_encode, plot_drifting
 import torch
 from molearn.models.foldingnet import AutoEncoder
 import argparse
-
+import sys
 
 def main():
     
