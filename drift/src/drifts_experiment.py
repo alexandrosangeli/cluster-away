@@ -76,6 +76,7 @@ def main():
     model.to(device)
 
     data = get_data(datafiles).dataset
+    data = data.to(device)
     num_atoms = data.size(1)
 
     rand_indices = torch.randperm(data.shape[0], device=device)
