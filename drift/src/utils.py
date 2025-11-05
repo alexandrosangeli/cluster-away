@@ -8,8 +8,7 @@ from tqdm import tqdm
 def get_data(datafiles, atoms_select=True):
     print("Loading data...")
     data = PDBData()
-    for f in datafiles:
-        data.import_pdb(f)
+    data.import_pdb(datafiles)
     if atoms_select:
         data.atomselect(atoms=['CA', 'C', 'CB', 'N', 'O'])
     data.prepare_dataset()
@@ -85,7 +84,7 @@ def batched_encode(model, dataset, batch_size, verbose=False):
     z = torch.empty(dataset.shape[0], 2, 1, dtype=dataset.dtype, device = dataset.device)
     with torch.no_grad():
         for i in tqdm(range(0, z.shape[0], batch_size)):
-            z[i:i+batch_size] = model.encode(dataset[i:i+batch_size].float())
+            z[i:i+batch_size] = model.encode(dataset[i:i+batch_size].float())[:, :, None]
     return z
 
 def batched_decode(model, latent_vector, n_atoms, batch_size, verbose=False):
@@ -94,7 +93,7 @@ def batched_decode(model, latent_vector, n_atoms, batch_size, verbose=False):
     decoded = torch.empty(latent_vector.shape[0], 3, n_atoms, dtype=latent_vector.dtype, device = latent_vector.device)
     with torch.no_grad():
         for i in tqdm(range(0, decoded.shape[0], batch_size)):
-            decoded[i:i+batch_size] = model.decode(latent_vector[i:i+batch_size].float())[:,:,:n_atoms]
+            decoded[i:i+batch_size] = model.decode(latent_vector[i:i+batch_size].float())[:, :n_atoms, :].permute(0, 2, 1)
     return decoded
 
 
@@ -112,7 +111,7 @@ def encode_decode(model, dataset, N, num_atoms, batch_size, verbose=False):
             print(f"Encode-Decode iteration: [{i+1}/{N}]")
         encoded = batched_encode(model, dataset, batch_size)
         z.append(encoded)
-        decoded = batched_decode(model, encoded, num_atoms, batch_size)
+        decoded = batched_decode(model, encoded, num_atoms, batch_size).permute(0,2,1)
         decodings.append(decoded)
         dataset = decoded
     
@@ -131,7 +130,7 @@ def decode_encode(model, z, num_iters, num_atoms, batch_size, verbose=False):
     for i in range(num_iters):
         if verbose:
             print(f"Decode-Encode iteration: [{i+1}/{num_iters}]")
-        decoded = batched_decode(model, z, num_atoms, batch_size)
+        decoded = batched_decode(model, z, num_atoms, batch_size).permute(0,2,1)
         decodings.append(decoded)
         encoded = batched_encode(model, decoded, batch_size)
         zs.append(encoded)
