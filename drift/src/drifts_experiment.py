@@ -3,9 +3,10 @@ import torch
 from molearn.models.foldingnet import AutoEncoder
 import argparse
 import sys
+import math
+import time
 
 def main():
-    
     parser = argparse.ArgumentParser(description="Encode-Decode job")
 
     parser.add_argument(
@@ -113,4 +114,10 @@ def main():
     return 0
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    end_time = time.time()
+    duration_seconds = end_time - start_time
+    minutes = math.floor(duration_seconds / 60) 
+    remaining_seconds = duration_seconds % 60
+    print(f"Python script duration: **{minutes} minutes and {remaining_seconds:.2f} seconds**")
