@@ -50,6 +50,13 @@ def main():
         help='Specify one or more PDBS'
     )
 
+    parser.add_argument(
+        '-o', '--output_dir',
+        type=str,
+        required=True,  # this should be true
+        help='Specify the path to save any output'
+    )
+
     args = parser.parse_args()
     num_iters = args.num_iters
     scale_factor = args.grid_scale_factor
@@ -57,8 +64,9 @@ def main():
     checkpoint_file = args.checkpoint_file
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
+    output_dir = args.output_dir
 
-    # assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
+    assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
     print(f"Python version: {sys.version}")
     print(f"PyTorch version: {torch.__version__}")
@@ -99,7 +107,7 @@ def main():
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
     endings = decode_encode(model=model, z=startings[:, :, None], num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir)
 
     print("Script complete. Exiting.")
     return 0

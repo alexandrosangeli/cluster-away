@@ -43,7 +43,8 @@ python3 src/drifts_experiment.py \
     --num_iters=1 \
     --grid_scale_factor=1.0 \
     --resolution=25 \
-    --pdbs MurD_closed.pdb MurD_open.pdb
+    --pdbs MurD_closed.pdb MurD_open.pdb \
+    --output_dir=${OUTPUT_DIR}
 
 OUTPUT_HOME=${PWD}/plots/
 mkdir -p ${OUTPUT_HOME}

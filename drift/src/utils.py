@@ -39,12 +39,10 @@ def calculate_drift_coords(start, end, norm=False):
     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters):
+def plot_drifting(z, num_iters, output_dir):
     fig, ax = plt.subplots(figsize=(8, 8))
-    print(f"{z.shape=}")
     for i in range(num_iters):
         X = z[i].squeeze()
-        print(f"{X.shape=}")
         X_transformed = z[i+1].squeeze()
 
         X_np = X.numpy()
@@ -73,7 +71,10 @@ def plot_drifting(z, num_iters):
     ax.legend()
     ax.grid(True, linestyle='', alpha=0.5)
     ax.set_aspect('equal', adjustable='box') # Ensures accurate visual representation of distances
-    plt.savefig(f'{timestamp}_trajectories_plot.png')
+
+    filename = f'{output_dir}/{timestamp}_trajectories_plot.png'
+    print(f"Saving plot in {filename}")
+    plt.savefig(filename)
     plt.close()
 
 
