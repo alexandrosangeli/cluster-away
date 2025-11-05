@@ -41,6 +41,7 @@ def calculate_drift_coords(start, end, norm=False):
 
 def plot_drifting(z, num_iters, output_dir):
     fig, ax = plt.subplots(figsize=(8, 8))
+    z = z.cpu()
     for i in range(num_iters):
         X = z[i].squeeze()
         X_transformed = z[i+1].squeeze()

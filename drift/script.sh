@@ -12,27 +12,43 @@
 
 set -e # fail fast
 
-source /home/${USER}/miniconda3/bin/activate molearn
-
 export MOLEARN_PATH=/home/${USER}/repos/molearn
-python3 -m pip install "$MOLEARN_PATH"
+export SCRATCH_HOME=/disk/scratch/${USER}
+export DATA_HOME=${PWD}/data
+export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data
+export OUTPUT_DIR=${SCRATCH_HOME}/experiments/plots
+
+
+# Check for the -g flag
+if [[ "$*" == *"-g"* ]]; then
+    CONDA_ENV_NAME="molearn-gpu"
+else
+    CONDA_ENV_NAME="molearn"
+fi
+
+source /home/${USER}/miniconda3/bin/activate ${CONDA_ENV_NAME}
+
+echo "Activated ${CONDA_ENV_NAME}"
+
+if python3 -c "import molearn" 2>/dev/null; then
+    echo "Molearn is already installed."
+else
+    echo "Molearn not found. Installing from source..."
+    python3 -m pip install "$MOLEARN_PATH"
+    echo "Molearn nstallation complete."
+fi
 
 dt=$(date '+%d_%m_%y_%H_%M');
-echo "I am job ${SLURM_JOB_ID}"
-echo "I'm running on ${SLURM_JOB_NODELIST}"
-echo "Job started at ${dt}"
+echo "I am job ${SLURM_JOB_ID}."
+echo "I'm running on ${SLURM_JOB_NODELIST}."
+echo "Job started at ${dt}."
 
 # ====================
 # RSYNC data from /home/ to /disk/scratch/
 # ====================
-export SCRATCH_HOME=/disk/scratch/${USER}
-export DATA_HOME=${PWD}/data
-export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data
 mkdir -p ${SCRATCH_HOME}/experiments/data
 rsync --archive --update --compress --progress ${DATA_HOME}/ ${DATA_SCRATCH}
 
-
-export OUTPUT_DIR=${SCRATCH_HOME}/experiments/plots
 mkdir -p ${OUTPUT_DIR}
 echo "Created ${OUTPUT_DIR}"
 
@@ -46,7 +62,7 @@ python3 src/drifts_experiment.py \
     --pdbs MurD_closed.pdb MurD_open.pdb \
     --output_dir=${OUTPUT_DIR}
 
-OUTPUT_HOME=${PWD}/plots/
+OUTPUT_HOME=${PWD}/
 mkdir -p ${OUTPUT_HOME}
 rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
 
