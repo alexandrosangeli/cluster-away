@@ -32,11 +32,11 @@ mkdir -p ${SCRATCH_HOME}/experiments/data
 rsync --archive --update --compress --progress ${DATA_HOME}/ ${DATA_SCRATCH}
 
 
-echo "Creating directory to save the plot"
 export OUTPUT_DIR=${SCRATCH_HOME}/experiments/plots
 mkdir -p ${OUTPUT_DIR}
+echo "Created ${OUTPUT_DIR}"
 
-
+echo "Running Python script..."
 python3 src/drifts_experiment.py \
     --checkpoint_file=${DATA_SCRATCH}/models/checkpoints/foldingnet/checkpoint_no_optimizer_state_dict_epoch167_loss0.003259085263643.ckpt \
     --data_path=${DATA_SCRATCH}/proteins \

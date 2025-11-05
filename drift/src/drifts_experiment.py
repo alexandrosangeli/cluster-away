@@ -47,7 +47,7 @@ def main():
         '-p', '--pdbs',
         type=str,
         nargs='+',  # Accepts one or more files
-        help='Specify one or PDBS.'
+        help='Specify one or more PDBS'
     )
 
     args = parser.parse_args()
@@ -59,6 +59,9 @@ def main():
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
 
     # assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
+
+    print(f"Python version: {sys.version}")
+    print(f"PyTorch version: {torch.__version__}")
 
     torch.manual_seed(2025)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
