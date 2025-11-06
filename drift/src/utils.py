@@ -74,6 +74,7 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
             os.makedirs(f'{output_dir}/gif_{timestamp}', exist_ok=True)
             frame_filename = f'{output_dir}/gif_{timestamp}/frame_{i:04d}.png'
             ax.set_title(f'Trajectories (Iteration {i+1} / {num_iters})')
+            ax.legend()
             plt.savefig(frame_filename, dpi=150)
             print(f"Saved GIF frame: {frame_filename}")
             curr_end_points.remove()
@@ -84,7 +85,6 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
     ax.set_title(f'Trajectories (Complete)')
     ax.set_xlabel('z_1')
     ax.set_ylabel('z_2')
-    ax.legend()
     ax.grid(True, linestyle='', alpha=0.5)
     ax.set_aspect('equal', adjustable='box') 
 
