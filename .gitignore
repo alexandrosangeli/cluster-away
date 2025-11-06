@@ -3,3 +3,4 @@ __pycache__
 script_local.sh
 *.png
 *.svg
+*.gif

@@ -3,6 +3,7 @@ from molearn.data import PDBData
 import matplotlib.pyplot as plt
 import datetime
 from tqdm import tqdm
+import os
 
 
 def get_data(datafiles, atoms_select=True):
@@ -39,54 +40,110 @@ def calculate_drift_coords(start, end, norm=False):
     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=None, max_y=None):
-    fig, ax = plt.subplots(figsize=(30, 30))
+def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=None, max_y=None, gif=True):
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
-    for i in range(num_iters):
-        X = z[i].squeeze()
-        X_transformed = z[i+1].squeeze()
-
-        X_np = X.numpy()
-        X_transformed_np = X_transformed.numpy()
-
-        if i == 0:
-            ax.scatter(X_np[:, 0], X_np[:, 1], color='blue', marker='x', s=5, label='Start Points', zorder=3)
-
-        # Iterate and Plot N Lines
-        for j in range(X.shape[0]):
-            # Get the start and end coordinates for the i-th point
-            start_x, start_y = X_np[j]
-            end_x, end_y = X_transformed_np[j]
-
-            # Plot the line segment from start to end
-            # 'k-' is a black solid line
-            ax.plot([start_x, end_x], [start_y, end_y], 'k-', alpha=alpha, linewidth=1, zorder=1)
-
-        if i == num_iters - 1:
-            ax.scatter(X_transformed_np[:, 0], X_transformed_np[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
-
-    if None not in [min_x, max_x, min_y, max_y]:
-        min_x, max_x, min_y, max_y = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
-        padding = 0.1 * (max_x - min_x)
-        ax.set_xlim(min_x - padding, max_x + padding)
-        ax.set_ylim(min_y - padding, max_y + padding)
-
+    fig, ax = plt.subplots(figsize=(8, 8)) # Use a smaller figure size for GIF frames
+    
     now = datetime.datetime.now()
     timestamp_format = "%Y%m%d_%H%M%S"
     timestamp = now.strftime(timestamp_format)
 
-    ax.set_title(f'Trajectories')
+    if None not in [min_x, max_x, min_y, max_y]:
+        x_min, x_max, y_min, y_max = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
+        padding_x = 0.1 * (x_max - x_min)
+        padding_y = 0.1 * (y_max - y_min)
+        ax.set_xlim(x_min - padding_x, x_max + padding_x)
+        ax.set_ylim(y_min - padding_y, y_max + padding_y)
+
+    # Iterate from the first step (i=0) up to the final step (i=num_iters - 1)
+    for i in range(num_iters):
+        X = z[i].squeeze()
+        X_transformed = z[i+1].squeeze()
+
+        if i == 0:
+            ax.scatter(X[:, 0], X[:, 1], color='blue', marker='x', s=5, label='Start Points', zorder=3)
+
+        for j in range(X.shape[0]):
+            start_x, start_y = X[j]
+            end_x, end_y = X_transformed[j]
+            ax.plot([start_x, end_x], [start_y, end_y], 'k-', alpha=alpha, linewidth=1, zorder=1)
+
+        if gif:
+            curr_end_points = ax.scatter(X_transformed[:, 0], X_transformed[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
+            os.makedirs(f'{output_dir}/gif_{timestamp}', exist_ok=True)
+            frame_filename = f'{output_dir}/gif_{timestamp}/frame_{i:04d}.png'
+            ax.set_title(f'Trajectories (Iteration {i+1} / {num_iters})')
+            plt.savefig(frame_filename, dpi=150)
+            print(f"Saved GIF frame: {frame_filename}")
+            curr_end_points.remove()
+        
+    ax.scatter(X_transformed[:, 0], X_transformed[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
+
+    
+    ax.set_title(f'Trajectories (Complete)')
     ax.set_xlabel('z_1')
     ax.set_ylabel('z_2')
     ax.legend()
     ax.grid(True, linestyle='', alpha=0.5)
-    ax.set_aspect('equal', adjustable='box') # Ensures accurate visual representation of distances
+    ax.set_aspect('equal', adjustable='box') 
 
-    filename = f'{output_dir}/{timestamp}_trajectories_plot.svg'
-    print(f"Saving plot in {filename}")
-    plt.savefig(filename, format='svg')
-    plt.close()
+    final_filename = f'{output_dir}/{timestamp}_trajectories_plot.svg'
+    print(f"Saving final plot in {final_filename}")
+    plt.savefig(final_filename, format='svg')
+    plt.close(fig)
+    
+    if gif:
+        print(f"All {num_iters} GIF frames and the final SVG plot have been saved to {output_dir}.")
+
+# def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=None, max_y=None):
+#     fig, ax = plt.subplots(figsize=(30, 30))
+#     z = z.cpu()
+#     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
+#     for i in range(num_iters):
+#         X = z[i].squeeze()
+#         X_transformed = z[i+1].squeeze()
+
+#         X_np = X.numpy()
+#         X_transformed_np = X_transformed.numpy()
+
+#         if i == 0:
+#             ax.scatter(X_np[:, 0], X_np[:, 1], color='blue', marker='x', s=5, label='Start Points', zorder=3)
+
+#         for j in range(X.shape[0]):
+#             # Get the start and end coordinates for the i-th point
+#             start_x, start_y = X_np[j]
+#             end_x, end_y = X_transformed_np[j]
+
+#             # Plot the line segment from start to end
+#             # 'k-' is a black solid line
+#             ax.plot([start_x, end_x], [start_y, end_y], 'k-', alpha=alpha, linewidth=1, zorder=1)
+
+#         if i == num_iters - 1:
+#             ax.scatter(X_transformed_np[:, 0], X_transformed_np[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
+
+#     if None not in [min_x, max_x, min_y, max_y]:
+#         min_x, max_x, min_y, max_y = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
+#         padding_x = 0.1 * (x_max - x_min)
+#         padding_y = 0.1 * (y_max - y_min)
+#         ax.set_xlim(min_x - padding, max_x + padding)
+#         ax.set_ylim(min_y - padding, max_y + padding)
+
+#     now = datetime.datetime.now()
+#     timestamp_format = "%Y%m%d_%H%M%S"
+#     timestamp = now.strftime(timestamp_format)
+
+#     ax.set_title(f'Trajectories')
+#     ax.set_xlabel('z_1')
+#     ax.set_ylabel('z_2')
+#     ax.legend()
+#     ax.grid(True, linestyle='', alpha=0.5)
+#     ax.set_aspect('equal', adjustable='box') # Ensures accurate visual representation of distances
+
+#     filename = f'{output_dir}/{timestamp}_trajectories_plot.svg'
+#     print(f"Saving plot in {filename}")
+#     plt.savefig(filename, format='svg')
+#     plt.close()
 
 
 def batched_encode(model, dataset, batch_size, verbose=False):
