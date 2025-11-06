@@ -64,6 +64,7 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
             ax.scatter(X_transformed_np[:, 0], X_transformed_np[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
 
     if None not in [min_x, max_x, min_y, max_y]:
+        min_x, max_x, min_y, max_y = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
         padding = 0.1 * (max_x - min_x)
         ax.set_xlim(min_x - padding, max_x + padding)
         ax.set_ylim(min_y - padding, max_y + padding)
