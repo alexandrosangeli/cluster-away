@@ -40,7 +40,7 @@ def calculate_drift_coords(start, end, norm=False):
     
 
 def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=None, max_y=None):
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(30, 30))
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     for i in range(num_iters):
@@ -49,6 +49,9 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
 
         X_np = X.numpy()
         X_transformed_np = X_transformed.numpy()
+
+        if i == 0:
+            ax.scatter(X_np[:, 0], X_np[:, 1], color='blue', marker='x', s=5, label='Start Points', zorder=3)
 
         # Iterate and Plot N Lines
         for j in range(X.shape[0]):
@@ -80,9 +83,9 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
     ax.grid(True, linestyle='', alpha=0.5)
     ax.set_aspect('equal', adjustable='box') # Ensures accurate visual representation of distances
 
-    filename = f'{output_dir}/{timestamp}_trajectories_plot.png'
+    filename = f'{output_dir}/{timestamp}_trajectories_plot.svg'
     print(f"Saving plot in {filename}")
-    plt.savefig(filename)
+    plt.savefig(filename, format='svg')
     plt.close()
 
 

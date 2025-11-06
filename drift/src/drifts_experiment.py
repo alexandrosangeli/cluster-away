@@ -90,10 +90,10 @@ def main():
 
     initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=True)
 
-    min_x = torch.min(initial_z.squeeze()[:, 0]) * scale_factor
-    min_y = torch.min(initial_z.squeeze()[:, 1]) * scale_factor
-    max_x = torch.max(initial_z.squeeze()[:, 0]) * scale_factor
-    max_y = torch.max(initial_z.squeeze()[:, 1]) * scale_factor
+    min_x = torch.min(initial_z.squeeze()[:, 0]) - (torch.min(initial_z.squeeze()[:, 0]) * scale_factor)
+    min_y = torch.min(initial_z.squeeze()[:, 1]) - (torch.min(initial_z.squeeze()[:, 1]) * scale_factor)
+    max_x = torch.max(initial_z.squeeze()[:, 0]) + (torch.max(initial_z.squeeze()[:, 0]) * scale_factor)
+    max_y = torch.max(initial_z.squeeze()[:, 1]) + (torch.max(initial_z.squeeze()[:, 1]) * scale_factor)
 
 
     x_lin = torch.linspace(min_x, max_x, res, device=device)
@@ -103,7 +103,7 @@ def main():
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
     endings = decode_encode(model=model, z=startings[:, :, None], num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, min_x=None, max_x=max_x, min_y=min_y, max_y=max_y)
 
     print("Script complete. Exiting.")
     return 0

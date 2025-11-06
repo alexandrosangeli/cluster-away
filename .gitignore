@@ -2,3 +2,4 @@ __pycache__
 *.pdb
 script_local.sh
 *.png
+*.svg
