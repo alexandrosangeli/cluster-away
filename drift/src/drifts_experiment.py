@@ -100,12 +100,10 @@ def main():
     y_lin = torch.linspace(min_y, max_y, res, device=device)
     X, Y = torch.meshgrid(x_lin, y_lin, indexing='xy')
 
-    print(X.device)
-
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
     endings = decode_encode(model=model, z=startings[:, :, None], num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
     print("Script complete. Exiting.")
     return 0

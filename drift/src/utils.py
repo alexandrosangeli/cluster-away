@@ -39,9 +39,10 @@ def calculate_drift_coords(start, end, norm=False):
     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters, output_dir):
+def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=None, max_y=None):
     fig, ax = plt.subplots(figsize=(8, 8))
     z = z.cpu()
+    alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     for i in range(num_iters):
         X = z[i].squeeze()
         X_transformed = z[i+1].squeeze()
@@ -57,10 +58,15 @@ def plot_drifting(z, num_iters, output_dir):
 
             # Plot the line segment from start to end
             # 'k-' is a black solid line
-            ax.plot([start_x, end_x], [start_y, end_y], 'k-', alpha=0.15, linewidth=1, zorder=1)
+            ax.plot([start_x, end_x], [start_y, end_y], 'k-', alpha=alpha, linewidth=1, zorder=1)
 
         if i == num_iters - 1:
             ax.scatter(X_transformed_np[:, 0], X_transformed_np[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
+
+    if None not in [min_x, max_x, min_y, max_y]:
+        padding = 0.1 * (max_x - min_x)
+        ax.set_xlim(min_x - padding, max_x + padding)
+        ax.set_ylim(min_y - padding, max_y + padding)
 
     now = datetime.datetime.now()
     timestamp_format = "%Y%m%d_%H%M%S"
