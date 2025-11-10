@@ -206,3 +206,5 @@ def decode_encode(model, z, num_iters, num_atoms, batch_size, verbose=False):
         z = encoded
 
     return {"encodings" : torch.stack(zs), "decodings" : torch.stack(decodings)}
+
+
