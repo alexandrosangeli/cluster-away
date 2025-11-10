@@ -16,7 +16,7 @@ export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
 export DATA_HOME=${PWD}/data
 export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data
-export OUTPUT_DIR=${SCRATCH_HOME}/experiments/plots
+export OUTPUT_DIR=${SCRATCH_HOME}/experiments/out
 
 
 # Check for the -g flag
@@ -46,7 +46,7 @@ echo "Job started at ${dt}."
 # ====================
 # RSYNC data from /home/ to /disk/scratch/
 # ====================
-mkdir -p ${SCRATCH_HOME}/experiments/data
+mkdir -p ${DATA_SCRATCH}
 rsync --archive --update --compress --progress ${DATA_HOME}/ ${DATA_SCRATCH}
 
 mkdir -p ${OUTPUT_DIR}
@@ -67,6 +67,7 @@ mkdir -p ${OUTPUT_HOME}
 rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
 
 rm -rf ${OUTPUT_DIR}
+rm -rf ${DATA_SCRATCH}
 
 echo "Job is done"
 exit 0
