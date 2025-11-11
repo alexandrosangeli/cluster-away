@@ -4,6 +4,7 @@ from molearn.models.foldingnet import AutoEncoder
 import argparse
 import sys
 import math
+import datetime
 import time
 
 def main():
@@ -88,7 +89,7 @@ def main():
     data = data.to(device)
     num_atoms = data.size(1)
 
-    initial_z = batched_encode(model=model, dataset=data[:30], batch_size=batch_size, verbose=True)
+    initial_z = batched_encode(model=model, dataset=data[:16], batch_size=batch_size, verbose=True)
 
     min_x = torch.min(initial_z.squeeze()[:, 0]) - (torch.min(initial_z.squeeze()[:, 0]) * scale_factor)
     min_y = torch.min(initial_z.squeeze()[:, 1]) - (torch.min(initial_z.squeeze()[:, 1]) * scale_factor)
@@ -102,6 +103,13 @@ def main():
 
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
     endings = decode_encode(model=model, z=startings[:, :, None], num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
+    
+    now = datetime.datetime.now()
+    timestamp_format = "%Y%m%d_%H%M%S"
+    timestamp = now.strftime(timestamp_format)
+
+    torch.save(endings['encodings'][-1, :, :], f"{output_dir}/{timestamp}_encodings.pt")
+    print(f"Saved encodings in {output_dir}/{timestamp}_encodings.pt")
 
     plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, min_x=None, max_x=max_x, min_y=min_y, max_y=max_y, gif=True)
 
