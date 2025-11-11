@@ -89,7 +89,7 @@ def main():
     data = data.to(device)
     num_atoms = data.size(1)
 
-    initial_z = batched_encode(model=model, dataset=data[:16], batch_size=batch_size, verbose=True)
+    initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=True)
 
     min_x = torch.min(initial_z.squeeze()[:, 0]) - (torch.min(initial_z.squeeze()[:, 0]) * scale_factor)
     min_y = torch.min(initial_z.squeeze()[:, 1]) - (torch.min(initial_z.squeeze()[:, 1]) * scale_factor)
