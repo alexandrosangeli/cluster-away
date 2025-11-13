@@ -146,14 +146,14 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
 #     plt.close()
 
 
-def batched_encode(model, dataset, batch_size, verbose=False):
+def batched_encode(model, dataset, batch_size, z_dim=2, verbose=False):
     # Preallocate space for the results to go
     if verbose:
         print("Encoding...")
-    z = torch.empty(dataset.shape[0], 2, 1, dtype=dataset.dtype, device = dataset.device)
+    z = torch.empty(dataset.shape[0], z_dim, dtype=dataset.dtype, device = dataset.device)
     with torch.no_grad():
         for i in tqdm(range(0, z.shape[0], batch_size)):
-            z[i:i+batch_size] = model.encode(dataset[i:i+batch_size].float())[:, :, None]
+            z[i:i+batch_size] = model.encode(dataset[i:i+batch_size].float()).squeeze()
     return z
 
 def batched_decode(model, latent_vector, n_atoms, batch_size, verbose=False):
