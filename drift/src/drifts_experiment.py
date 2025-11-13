@@ -1,16 +1,28 @@
 from utils import get_data, decode_encode, batched_encode, plot_drifting
 import torch
-from molearn.models.foldingnet import AutoEncoder
+from molearn.models.CNN_autoencoder import AutoEncoder as ConvolutionalAE
+from molearn.models.foldingnet import AutoEncoder as FoldingNet
 import argparse
 import sys
+import json
 import math
 import datetime
 import time
 
 
-def log_params(**params):
-    for p, v in params.items():
-        print(f"{p}={v}")
+AUTOENCODER_SELLECTION = {
+    "cnn_ae" : ConvolutionalAE,
+    "fold_net" : FoldingNet
+}
+
+
+def log_params(path, **params):
+    print("--- Parameters ---")
+    print(json.dumps(params, indent=4))
+    print("------------------")
+    with open(f"{path}/params.json", 'w') as f:
+            json.dump(params, f, indent=4)
+    print(f"Parameters successfully written to: {path}")
 
 
 def main():
@@ -65,6 +77,13 @@ def main():
         help='Specify the path to save any output'
     )
 
+    parser.add_argument(
+        '-a', '--autoencoder', 
+        type=str, 
+        required=True,
+        help='The autoencoder type'
+    )
+
     args = parser.parse_args()
     num_iters = args.num_iters
     scale_factor = args.grid_scale_factor
@@ -74,20 +93,24 @@ def main():
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
+
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
     log_params(
+        path=output_dir,
         experiment=sys.argv[0],
         output_dir=output_dir,
         datafiles=datafiles,
+        autoencoder_of_choice=str(autoencoder_of_choice),
         checkpoint_file=checkpoint_file,
         resolution=res,
         scale_factor=scale_factor,
         num_iters=num_iters,
         python_version=sys.version,
         torch_version=torch.__version__,
-        device=device,
+        device=str(device),
     )
 
 
@@ -97,7 +120,7 @@ def main():
     batch_size=8
 
     checkpoint = torch.load(checkpoint_file, map_location=torch.device('cpu'), weights_only=False)
-    model = AutoEncoder(**checkpoint['network_kwargs'])
+    model = autoencoder_of_choice(**checkpoint['network_kwargs'])
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()
     model.to(device)

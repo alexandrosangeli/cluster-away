@@ -62,7 +62,8 @@ python3 src/drifts_experiment.py \
     --grid_scale_factor=0.5 \
     --resolution=50 \
     --pdbs MurD_closed.pdb MurD_open.pdb \
-    --output_dir=${OUTPUT_DIR}
+    --output_dir=${OUTPUT_DIR} \
+    --autoencoder=fold_net
 
 OUTPUT_HOME=${PWD}/
 mkdir -p ${OUTPUT_HOME}
