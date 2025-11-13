@@ -10,6 +10,12 @@ import torch
 import argparse
 
 
+AUTOENCODER_SELLECTION = {
+    "cnn_ae" : ConvolutionalAE,
+    "fold_net" : FoldingNet
+}
+
+
 def log_params(**params):
     for p, v in params.items():
         print(f"{p}={v}")
@@ -38,17 +44,26 @@ def main():
         help='Specify one or more PDBS'
     )
 
+    parser.add_argument(
+        '-a', '--autoencoder', 
+        type=str, 
+        required=True,
+        help='The autoencoder type'
+    )
+
 
     args = parser.parse_args()
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
 
     log_params(
         experiment=sys.argv[0],
         output_dir=output_dir,
         datafiles=datafiles,
+        autoencoder_of_choice=autoencoder_of_choice,
         python_version=sys.version,
         torch_version=torch.__version__,
         device=device,
@@ -72,7 +87,7 @@ def main():
                      save_indices=False     # If True, the training/validation split indices will be saved to disk
                      )
     trainer.prepare_physics(remove_NB=True)
-    trainer.set_autoencoder(AutoEncoder)
+    trainer.set_autoencoder(autoencoder_of_choice)
     trainer.prepare_optimiser()
 
     ##### Training Loop #####

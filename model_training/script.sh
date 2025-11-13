@@ -16,7 +16,7 @@ export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
-export DATA_HOME=${PWD}/data
+export DATA_HOME=${PWD}/../drift/data
 export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${TIMESTAMP}
 export OUTPUT_DIR=${SCRATCH_HOME}/experiments/out_${TIMESTAMP}
 
@@ -58,7 +58,8 @@ echo "Running Python script..."
 python3 src/train.py \
     --output_dir=${OUTPUT_DIR} \
     --data_path=${DATA_SCRATCH}/proteins \
-    --pdbs MurD_closed.pdb MurD_open.pdb
+    --pdbs MurD_closed.pdb MurD_open.pdb \
+    --autoencoder=cnn_ae
 
 OUTPUT_HOME=${PWD}/
 mkdir -p ${OUTPUT_HOME}
