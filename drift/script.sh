@@ -16,9 +16,9 @@ export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
-export DATA_HOME=${PWD}/data
+export DATA_HOME=${PWD}/../data
 export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${TIMESTAMP}
-export OUTPUT_DIR=${SCRATCH_HOME}/experiments/out_${TIMESTAMP}
+export OUTPUT_DIR=${SCRATCH_HOME}/experiments/experiment_${TIMESTAMP}
 
 
 # Check for the -g flag
