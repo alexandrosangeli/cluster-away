@@ -1,8 +1,10 @@
-from molearn.models.CNN_autoencoder import AutoEncoder
+from molearn.models.CNN_autoencoder import AutoEncoder as ConvolutionalAE
+from molearn.models.foldingnet import AutoEncoder as FoldingNet
 from molearn.trainers import OpenMM_Physics_Trainer
 from molearn.data import PDBData
 import datetime
 import time
+import math
 import torch
 import argparse
 

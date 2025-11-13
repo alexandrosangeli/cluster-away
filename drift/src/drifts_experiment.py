@@ -70,6 +70,7 @@ def main():
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
+    print("Running drifts_experiment.py")
     print(f"Python version: {sys.version}")
     print(f"PyTorch version: {torch.__version__}")
 
@@ -79,7 +80,7 @@ def main():
 
     batch_size=8
 
-    checkpoint = torch.load(checkpoint_file, map_location= torch.device('cpu'), weights_only=False)
+    checkpoint = torch.load(checkpoint_file, map_location=torch.device('cpu'), weights_only=False)
     model = AutoEncoder(**checkpoint['network_kwargs'])
     model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()

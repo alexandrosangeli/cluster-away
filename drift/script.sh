@@ -12,11 +12,13 @@
 
 set -e # fail fast
 
+export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
 export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
 export DATA_HOME=${PWD}/data
-export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data
-export OUTPUT_DIR=${SCRATCH_HOME}/experiments/out
+export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${TIMESTAMP}
+export OUTPUT_DIR=${SCRATCH_HOME}/experiments/out_${TIMESTAMP}
 
 
 # Check for the -g flag
@@ -66,7 +68,10 @@ OUTPUT_HOME=${PWD}/
 mkdir -p ${OUTPUT_HOME}
 rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
 
+echo "Removing ${OUTPUT_DIR}"
 rm -rf ${OUTPUT_DIR}
+
+echo "Removing ${DATA_SCRATCH}"
 rm -rf ${DATA_SCRATCH}
 
 echo "Job is done"

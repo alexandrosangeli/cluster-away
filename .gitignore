@@ -6,3 +6,4 @@ script_local.sh
 *.gif
 *.mp4
 *.pt
+*.json
