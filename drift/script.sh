@@ -58,9 +58,9 @@ echo "Running Python script..."
 python3 src/drifts_experiment.py \
     --checkpoint_file=${DATA_SCRATCH}/models/checkpoints/foldingnet/checkpoint_no_optimizer_state_dict_epoch167_loss0.003259085263643.ckpt \
     --data_path=${DATA_SCRATCH}/proteins \
-    --num_iters=1 \
-    --grid_scale_factor=0.1 \
-    --resolution=25 \
+    --num_iters=100 \
+    --grid_scale_factor=0.5 \
+    --resolution=50 \
     --pdbs MurD_closed.pdb MurD_open.pdb \
     --output_dir=${OUTPUT_DIR}
 
