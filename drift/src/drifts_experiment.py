@@ -7,6 +7,12 @@ import math
 import datetime
 import time
 
+
+def log_params(**params):
+    for p, v in params.items():
+        print(f"{p}={v}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Encode-Decode job")
 
@@ -67,15 +73,25 @@ def main():
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
-    print("Running drifts_experiment.py")
-    print(f"Python version: {sys.version}")
-    print(f"PyTorch version: {torch.__version__}")
+    log_params(
+        experiment=sys.argv[0],
+        output_dir=output_dir,
+        datafiles=datafiles,
+        checkpoint_file=checkpoint_file,
+        resolution=res,
+        scale_factor=scale_factor,
+        num_iters=num_iters,
+        python_version=sys.version,
+        torch_version=torch.__version__,
+        device=device,
+    )
+
 
     torch.manual_seed(2025)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"{device=}")
 
     batch_size=8

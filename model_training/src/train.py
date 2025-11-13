@@ -4,6 +4,7 @@ from molearn.trainers import OpenMM_Physics_Trainer
 from molearn.data import PDBData
 import datetime
 import time
+import sys
 import math
 import torch
 import argparse
@@ -12,6 +13,7 @@ import argparse
 def log_params(**params):
     for p, v in params.items():
         print(f"{p}={v}")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Model training job")
@@ -41,10 +43,15 @@ def main():
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     log_params(
+        experiment=sys.argv[0],
         output_dir=output_dir,
-        datafiles=datafiles
+        datafiles=datafiles,
+        python_version=sys.version,
+        torch_version=torch.__version__,
+        device=device,
     )
 
     data = PDBData()
@@ -56,7 +63,6 @@ def main():
 
 
     ##### Prepare Trainer #####
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     trainer = OpenMM_Physics_Trainer(device=device)
 
     trainer.set_data(data, 
