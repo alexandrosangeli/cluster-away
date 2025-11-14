@@ -4,25 +4,17 @@ from molearn.models.CNN_autoencoder import AutoEncoder as ConvolutionalAE
 from molearn.models.foldingnet import AutoEncoder as FoldingNet
 import argparse
 import sys
+import os
 import json
 import math
 import datetime
 import time
 
 
-AUTOENCODER_SELLECTION = {
-    "cnn_ae" : ConvolutionalAE,
-    "fold_net" : FoldingNet
-}
-
-
-def log_params(path, **params):
-    print("--- Parameters ---")
-    print(json.dumps(params, indent=4))
-    print("------------------")
-    with open(f"{path}/params.json", 'w') as f:
-            json.dump(params, f, indent=4)
-    print(f"Parameters successfully written to: {path}")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.join(current_dir, '..', '..') 
+sys.path.append(root_dir)
+from generic_utils.utils import log_params, AUTOENCODER_SELLECTION
 
 
 def main():
@@ -113,7 +105,6 @@ def main():
         device=str(device),
     )
 
-
     torch.manual_seed(2025)
     print(f"{device=}")
 
@@ -142,7 +133,7 @@ def main():
     X, Y = torch.meshgrid(x_lin, y_lin, indexing='xy')
 
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
-    endings = decode_encode(model=model, z=startings[:, :, None], num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
+    endings = decode_encode(model=model, z=startings, num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
     
     now = datetime.datetime.now()
     timestamp_format = "%Y%m%d_%H%M%S"

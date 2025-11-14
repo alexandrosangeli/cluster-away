@@ -4,21 +4,16 @@ from molearn.trainers import OpenMM_Physics_Trainer
 from molearn.data import PDBData
 import datetime
 import time
+import os
 import sys
 import math
 import torch
 import argparse
 
-
-AUTOENCODER_SELLECTION = {
-    "cnn_ae" : ConvolutionalAE,
-    "fold_net" : FoldingNet
-}
-
-
-def log_params(**params):
-    for p, v in params.items():
-        print(f"{p}={v}")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.join(current_dir, '..', '..') 
+sys.path.append(root_dir)
+from generic_utils.utils import log_params, AUTOENCODER_SELLECTION, AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS
 
 
 def main():
@@ -51,22 +46,29 @@ def main():
         help='The autoencoder type'
     )
 
-
     args = parser.parse_args()
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
     datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
+    model_kwargs = AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS[args.autoencoder]
+    patience = 16
+    now = datetime.datetime.now()
+    timestamp_format = "%Y%m%d_%H%M%S"
+    timestamp = now.strftime(timestamp_format)
 
     log_params(
+        path=output_dir,
         experiment=sys.argv[0],
         output_dir=output_dir,
         datafiles=datafiles,
-        autoencoder_of_choice=autoencoder_of_choice,
+        autoencoder_of_choice=str(autoencoder_of_choice),
+        model_kwargs=model_kwargs,
+        patience=patience,
         python_version=sys.version,
         torch_version=torch.__version__,
-        device=device,
+        device=str(device),
     )
 
     data = PDBData()
@@ -75,11 +77,8 @@ def main():
     data.atomselect(atoms=["N", "CA", "CB", "C", "O"])
     dataset = data.prepare_dataset()
     data.write_statistics(f"{output_dir}/data_statistics.json") # Save mean and std for analysis later
-
-
-    ##### Prepare Trainer #####
+    
     trainer = OpenMM_Physics_Trainer(device=device)
-
     trainer.set_data(data, 
                      batch_size=16, 
                      validation_split=0.1, 
@@ -87,18 +86,11 @@ def main():
                      save_indices=False     # If True, the training/validation split indices will be saved to disk
                      )
     trainer.prepare_physics(remove_NB=True)
-    trainer.set_autoencoder(autoencoder_of_choice)
+    trainer.set_autoencoder(autoencoder_of_choice, **model_kwargs)
     trainer.prepare_optimiser()
 
-    ##### Training Loop #####
-    # Keep training until loss does not improve for 16 consecutive epochs
-
-    now = datetime.datetime.now()
-    timestamp_format = "%Y%m%d_%H%M%S"
-    timestamp = now.strftime(timestamp_format)
-
     fit_results = trainer.run_until_converge(
-        patience=16,
+        patience=patience,
         log_filename="log.dat",
         log_folder=f"{output_dir}/checkpoints_{timestamp}",
         checkpoint_folder=f"{output_dir}/checkpoints_{timestamp}",

@@ -13,6 +13,27 @@
 set -e # fail fast
 
 export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+export PYTHON_EXIT_STATUS=-1
+
+cleanup() {
+    echo "Starting guaranteed cleanup..."
+    
+    # Check the exit status of the Python script
+    if [ "${PYTHON_EXIT_STATUS}" -eq 0 ]; then
+        echo "Python script succeeded."
+        OUTPUT_HOME=${PWD}/
+        mkdir -p ${OUTPUT_HOME}
+        rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
+
+    else
+        echo "Python script **failed** with exit code ${PYTHON_EXIT_STATUS}."
+    fi
+
+    echo "Removing ${OUTPUT_DIR}"
+    rm -rf ${OUTPUT_DIR}
+    echo "Removing ${DATA_SCRATCH}"
+    rm -rf ${DATA_SCRATCH}
+}
 
 export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
@@ -37,7 +58,7 @@ if python3 -c "import molearn" 2>/dev/null; then
 else
     echo "Molearn not found. Installing from source..."
     python3 -m pip install "$MOLEARN_PATH"
-    echo "Molearn nstallation complete."
+    echo "Molearn installation complete."
 fi
 
 dt=$(date '+%d_%m_%y_%H_%M');
@@ -54,22 +75,17 @@ rsync --archive --update --compress --progress ${DATA_HOME}/ ${DATA_SCRATCH}
 mkdir -p ${OUTPUT_DIR}
 echo "Created ${OUTPUT_DIR}"
 
+trap cleanup EXIT
 echo "Running Python script..."
+set +e
 python3 src/train.py \
     --output_dir=${OUTPUT_DIR} \
     --data_path=${DATA_SCRATCH}/proteins \
     --pdbs MurD_closed.pdb MurD_open.pdb \
-    --autoencoder=cnn_ae
+    --autoencoder=fold_net
 
-OUTPUT_HOME=${PWD}/
-mkdir -p ${OUTPUT_HOME}
-rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
-
-echo "Removing ${OUTPUT_DIR}"
-rm -rf ${OUTPUT_DIR}
-
-echo "Removing ${DATA_SCRATCH}"
-rm -rf ${DATA_SCRATCH}
+PYTHON_EXIT_STATUS=$? 
+set -e
 
 echo "Job is done"
-exit 0
+exit "${PYTHON_EXIT_STATUS}"
