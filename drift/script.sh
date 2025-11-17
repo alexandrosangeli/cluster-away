@@ -22,7 +22,7 @@ cleanup() {
     # Check the exit status of the Python script
     if [ "${PYTHON_EXIT_STATUS}" -eq 0 ]; then
         echo "Python script succeeded."
-        OUTPUT_HOME=${PWD}/experiments/${EXPERIMENT_TYPE}
+        OUTPUT_HOME=${PWD}/../experiments/${EXPERIMENT_TYPE}
         mkdir -p ${OUTPUT_HOME}
         rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
 
