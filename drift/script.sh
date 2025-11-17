@@ -14,7 +14,7 @@ set -e # fail fast
 
 export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 export PYTHON_EXIT_STATUS=-1
-export EXPERIMENT_TYPE=basename ${PWD}
+export EXPERIMENT_TYPE=$(basename "$PWD")
 
 cleanup() {
     echo "Starting guaranteed cleanup..."
