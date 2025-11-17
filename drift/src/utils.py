@@ -13,7 +13,7 @@ def get_data(datafiles, atoms_select=True):
     if atoms_select:
         data.atomselect(atoms=['CA', 'C', 'CB', 'N', 'O'])
     data.prepare_dataset()
-    print("Done!")
+    print("Data loaded.")
     return data
 
 
@@ -148,20 +148,20 @@ def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=N
 
 def batched_encode(model, dataset, batch_size, z_dim=2, verbose=False):
     # Preallocate space for the results to go
-    if verbose:
-        print("Encoding...")
     z = torch.empty(dataset.shape[0], z_dim, dtype=dataset.dtype, device = dataset.device)
+    iterator = range(0, z.shape[0], batch_size)
+    iterator = tqdm(iterator) if verbose else iterator
     with torch.no_grad():
-        for i in tqdm(range(0, z.shape[0], batch_size)):
+        for i in iterator:
             z[i:i+batch_size] = model.encode(dataset[i:i+batch_size].float()).squeeze()
     return z
 
 def batched_decode(model, latent_vector, n_atoms, batch_size, verbose=False):
-    if verbose:
-        print("Decoding...")
     decoded = torch.empty(latent_vector.shape[0], 3, n_atoms, dtype=latent_vector.dtype, device = latent_vector.device)
+    iterator = range(0, decoded.shape[0], batch_size)
+    iterator = tqdm(iterator) if verbose else iterator
     with torch.no_grad():
-        for i in tqdm(range(0, decoded.shape[0], batch_size)):
+        for i in iterator:
             decoded[i:i+batch_size] = model.decode(latent_vector[i:i+batch_size].float())[:, :n_atoms, :].permute(0, 2, 1)
     return decoded
 

@@ -86,7 +86,7 @@ def main():
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
-
+    verbose = False
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
@@ -100,6 +100,7 @@ def main():
         resolution=res,
         scale_factor=scale_factor,
         num_iters=num_iters,
+        verbose=verbose,
         python_version=sys.version,
         torch_version=torch.__version__,
         device=str(device),
@@ -120,7 +121,7 @@ def main():
     data = data.to(device)
     num_atoms = data.size(1)
 
-    initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=True)
+    initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=verbose)
 
     min_x = torch.min(initial_z.squeeze()[:, 0]) - (torch.min(initial_z.squeeze()[:, 0]) * scale_factor)
     min_y = torch.min(initial_z.squeeze()[:, 1]) - (torch.min(initial_z.squeeze()[:, 1]) * scale_factor)
@@ -133,7 +134,7 @@ def main():
     X, Y = torch.meshgrid(x_lin, y_lin, indexing='xy')
 
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
-    endings = decode_encode(model=model, z=startings, num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=True)
+    endings = decode_encode(model=model, z=startings, num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=verbose)
     
     now = datetime.datetime.now()
     timestamp_format = "%Y%m%d_%H%M%S"
