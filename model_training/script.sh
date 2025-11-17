@@ -33,6 +33,7 @@ cleanup() {
     rm -rf ${OUTPUT_DIR}
     echo "Removing ${DATA_SCRATCH}"
     rm -rf ${DATA_SCRATCH}
+    echo "Cleanup also done"
 }
 
 export MOLEARN_PATH=/home/${USER}/repos/molearn

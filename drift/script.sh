@@ -13,6 +13,28 @@
 set -e # fail fast
 
 export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+export PYTHON_EXIT_STATUS=-1
+
+cleanup() {
+    echo "Starting guaranteed cleanup..."
+    
+    # Check the exit status of the Python script
+    if [ "${PYTHON_EXIT_STATUS}" -eq 0 ]; then
+        echo "Python script succeeded."
+        OUTPUT_HOME=${PWD}/
+        mkdir -p ${OUTPUT_HOME}
+        rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
+
+    else
+        echo "Python script **failed** with exit code ${PYTHON_EXIT_STATUS}."
+    fi
+
+    echo "Removing ${OUTPUT_DIR}"
+    rm -rf ${OUTPUT_DIR}
+    echo "Removing ${DATA_SCRATCH}"
+    rm -rf ${DATA_SCRATCH}
+    echo "Cleanup also done"
+}
 
 export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
@@ -54,7 +76,9 @@ rsync --archive --update --compress --progress ${DATA_HOME}/ ${DATA_SCRATCH}
 mkdir -p ${OUTPUT_DIR}
 echo "Created ${OUTPUT_DIR}"
 
+trap cleanup EXIT
 echo "Running Python script..."
+set +e
 python3 src/drifts_experiment.py \
     --checkpoint_file=${DATA_SCRATCH}/models/checkpoints/foldingnet/checkpoint_no_optimizer_state_dict_epoch167_loss0.003259085263643.ckpt \
     --data_path=${DATA_SCRATCH}/proteins \
@@ -65,15 +89,8 @@ python3 src/drifts_experiment.py \
     --output_dir=${OUTPUT_DIR} \
     --autoencoder=fold_net
 
-OUTPUT_HOME=${PWD}/
-mkdir -p ${OUTPUT_HOME}
-rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
-
-echo "Removing ${OUTPUT_DIR}"
-rm -rf ${OUTPUT_DIR}
-
-echo "Removing ${DATA_SCRATCH}"
-rm -rf ${DATA_SCRATCH}
+PYTHON_EXIT_STATUS=$? 
+set -e
 
 echo "Job is done"
-exit 0
+exit "${PYTHON_EXIT_STATUS}"
