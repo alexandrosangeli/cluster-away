@@ -24,6 +24,7 @@ cleanup() {
         echo "Python script succeeded."
         OUTPUT_HOME=${PWD}/../experiments/${EXPERIMENT_TYPE}
         mkdir -p ${OUTPUT_HOME}
+        echo "Created ${OUTPUT_HOME} to save outputs"
         rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
 
     else
