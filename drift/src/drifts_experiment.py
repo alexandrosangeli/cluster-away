@@ -76,6 +76,13 @@ def main():
         help='The autoencoder type'
     )
 
+    parser.add_argument(
+        '-t', '--timestamp', 
+        type=str, 
+        required=True,
+        help='The current timestamp'
+    )
+
     args = parser.parse_args()
     num_iters = args.num_iters
     scale_factor = args.grid_scale_factor
@@ -86,6 +93,7 @@ def main():
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
+    timestamp = args.timestamp
     verbose = False
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
@@ -136,14 +144,10 @@ def main():
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
     endings = decode_encode(model=model, z=startings, num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=verbose)
     
-    now = datetime.datetime.now()
-    timestamp_format = "%Y%m%d_%H%M%S"
-    timestamp = now.strftime(timestamp_format)
-
     torch.save(endings['encodings'][-1, :, :], f"{output_dir}/{timestamp}_encodings.pt")
     print(f"Saved encodings in {output_dir}/{timestamp}_encodings.pt")
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, min_x=None, max_x=max_x, min_y=min_y, max_y=max_y, gif=True)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, timestamp=timestamp, min_x=None, max_x=max_x, min_y=min_y, max_y=max_y, gif=True)
 
     print("Script complete. Exiting.")
     return 0

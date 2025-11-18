@@ -85,7 +85,9 @@ python3 src/train.py \
     --output_dir=${OUTPUT_DIR} \
     --data_path=${DATA_SCRATCH}/proteins \
     --pdbs MurD_closed.pdb MurD_open.pdb \
-    --autoencoder=fold_net
+    --autoencoder=fold_net \
+    --timestamp=${TIMESTAMP}
+
 
 PYTHON_EXIT_STATUS=$? 
 set -e

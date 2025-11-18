@@ -46,6 +46,13 @@ def main():
         help='The autoencoder type'
     )
 
+    parser.add_argument(
+        '-t', '--timestamp', 
+        type=str, 
+        required=True,
+        help='The current timestamp'
+    )
+
     args = parser.parse_args()
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
@@ -54,9 +61,7 @@ def main():
     autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
     model_kwargs = AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS[args.autoencoder]
     patience = 16
-    now = datetime.datetime.now()
-    timestamp_format = "%Y%m%d_%H%M%S"
-    timestamp = now.strftime(timestamp_format)
+    timestamp = args.timestamp
 
     log_params(
         path=output_dir,

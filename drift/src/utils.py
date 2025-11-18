@@ -1,7 +1,6 @@
 import torch
 from molearn.data import PDBData
 import matplotlib.pyplot as plt
-import datetime
 from tqdm import tqdm
 import os
 
@@ -40,15 +39,11 @@ def calculate_drift_coords(start, end, norm=False):
     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters, output_dir, res, min_x=None, max_x=None, min_y=None, max_y=None, gif=True):
+def plot_drifting(z, num_iters, output_dir, res, timestamp, min_x=None, max_x=None, min_y=None, max_y=None, gif=True):
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     fig, ax = plt.subplots(figsize=(8, 8)) # Use a smaller figure size for GIF frames
     
-    now = datetime.datetime.now()
-    timestamp_format = "%Y%m%d_%H%M%S"
-    timestamp = now.strftime(timestamp_format)
-
     if None not in [min_x, max_x, min_y, max_y]:
         x_min, x_max, y_min, y_max = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
         padding_x = 0.1 * (x_max - x_min)

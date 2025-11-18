@@ -89,7 +89,8 @@ python3 src/drifts_experiment.py \
     --resolution=50 \
     --pdbs MurD_closed.pdb MurD_open.pdb \
     --output_dir=${OUTPUT_DIR} \
-    --autoencoder=fold_net
+    --autoencoder=fold_net \
+    --timestamp=${TIMESTAMP}
 
 PYTHON_EXIT_STATUS=$? 
 set -e
