@@ -20,37 +20,44 @@ def main():
     parser = argparse.ArgumentParser(description="Model training job")
 
     parser.add_argument(
-        '-o', '--output_dir',
+        '--output_dir',
         type=str,
         required=True
     )
 
     parser.add_argument(
-        '-d', '--data_path', 
+        '--data_path', 
         type=str, 
         required=True,
         help='The path with the data'
     )
 
     parser.add_argument(
-        '-p', '--pdbs',
+        '--pdbs',
         type=str,
         nargs='+',  # Accepts one or more files
         help='Specify one or more PDBS'
     )
 
     parser.add_argument(
-        '-a', '--autoencoder', 
+        '--autoencoder', 
         type=str, 
         required=True,
         help='The autoencoder type'
     )
 
     parser.add_argument(
-        '-t', '--timestamp', 
+        '--timestamp', 
         type=str, 
         required=True,
         help='The current timestamp'
+    )
+
+    parser.add_argument(
+        '--description', 
+        type=str, 
+        required=False,
+        help='Optional description of the current experiment'
     )
 
     args = parser.parse_args()

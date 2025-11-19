@@ -21,66 +21,73 @@ def main():
     parser = argparse.ArgumentParser(description="Encode-Decode job")
 
     parser.add_argument(
-        '-f', '--checkpoint_file', 
+        '--checkpoint_file', 
         type=str, 
         required=True,  # this should be true
         help='The checkpoint (ckpt) file for the model'
     )
 
     parser.add_argument(
-        '-d', '--data_path', 
+        '--data_path', 
         type=str, 
         required=True,  # this should be true
         help='The path with the data'
     )
 
     parser.add_argument(
-        '-i', '--num_iters', 
+        '--num_iters', 
         type=int, 
         required=True,  # this should be true
         help='Number of decoding-encoding iterations'
     )
 
     parser.add_argument(
-        '-s', '--grid_scale_factor', 
+        '--grid_scale_factor', 
         type=float, 
         default=1.0,  # this should be true
         help='Scale factor to expand the grid by'
     )
 
     parser.add_argument(
-        '-r', '--resolution', 
+        '--resolution', 
         type=int, 
         default=25,  # this should be true
         help='Resolution as number of points generate in linspace'
     )
 
     parser.add_argument(
-        '-p', '--pdbs',
+        '--pdbs',
         type=str,
         nargs='+',  # Accepts one or more files
         help='Specify one or more PDBS'
     )
 
     parser.add_argument(
-        '-o', '--output_dir',
+        '--output_dir',
         type=str,
         required=True,  # this should be true
         help='Specify the path to save any output'
     )
 
     parser.add_argument(
-        '-a', '--autoencoder', 
+        '--autoencoder', 
         type=str, 
         required=True,
         help='The autoencoder type'
     )
 
     parser.add_argument(
-        '-t', '--timestamp', 
+        '--timestamp', 
         type=str, 
         required=True,
         help='The current timestamp'
+    )
+
+    parser.add_argument(
+        '--description', 
+        type=str, 
+        required=False,
+        help='Optional description of the current experiment'
     )
 
     args = parser.parse_args()
