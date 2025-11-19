@@ -86,7 +86,7 @@ def main():
     parser.add_argument(
         '--description', 
         type=str, 
-        required=False,
+        default="",
         help='Optional description of the current experiment'
     )
 
@@ -119,6 +119,7 @@ def main():
         python_version=sys.version,
         torch_version=torch.__version__,
         device=str(device),
+        description=args.description
     )
 
     torch.manual_seed(2025)

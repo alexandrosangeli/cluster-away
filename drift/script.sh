@@ -62,7 +62,7 @@ if python3 -c "import molearn" 2>/dev/null; then
 else
     echo "Molearn not found. Installing from source..."
     python3 -m pip install "$MOLEARN_PATH"
-    echo "Molearn nstallation complete."
+    echo "Molearn installation complete."
 fi
 
 dt=$(date '+%d_%m_%y_%H_%M');
