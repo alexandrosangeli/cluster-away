@@ -189,17 +189,17 @@ def decode_encode(model, z, num_iters, num_atoms, batch_size, verbose=False):
     data: torch tensor
     """
     
-    zs = [z]
+    zs = [z.cpu()]
     decodings = []
     for i in range(num_iters):
         if verbose:
             print(f"Decode-Encode iteration: [{i+1}/{num_iters}]")
         decoded = batched_decode(model, z, num_atoms, batch_size).permute(0,2,1)
-        decodings.append(decoded)
+        # decodings.append(decoded)
         encoded = batched_encode(model, decoded, batch_size)
-        zs.append(encoded)
+        zs.append(encoded.cpu())
         z = encoded
 
-    return {"encodings" : torch.stack(zs), "decodings" : torch.stack(decodings)}
+    return {"encodings" : torch.stack(zs), "decodings" : None}
 
 

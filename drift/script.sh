@@ -5,10 +5,10 @@
 #SBATCH -N 1	  # nodes requested
 #SBATCH -n 1	  # tasks requested
 #SBATCH --gres=gpu:1  # use 1 GPU
-#SBATCH --mem=14000  # memory in Mb
+#SBATCH --mem=24000  # memory in Mb
 #SBATCH --partition=PGR-Standard
 #SBATCH -t 2:00:00  # time requested in hour:minute:seconds
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=8
 
 set -e # fail fast
 
@@ -41,6 +41,7 @@ cleanup() {
 export MOLEARN_PATH=/home/${USER}/repos/molearn
 export SCRATCH_HOME=/disk/scratch/${USER}
 export DATA_HOME=${PWD}/../data
+export EXP_HOME=${PWD}/../experiments
 export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${TIMESTAMP}
 export OUTPUT_DIR=${SCRATCH_HOME}/experiments/experiment_${TIMESTAMP}
 
@@ -73,7 +74,8 @@ echo "Job started at ${dt}."
 # RSYNC data from /home/ to /disk/scratch/
 # ====================
 mkdir -p ${DATA_SCRATCH}
-rsync --archive --update --compress --progress ${DATA_HOME}/ ${DATA_SCRATCH}
+rsync --archive --update --compress ${DATA_HOME}/ ${DATA_SCRATCH}
+rsync --archive --update --compress ${EXP_HOME}/ ${DATA_SCRATCH}
 
 mkdir -p ${OUTPUT_DIR}
 echo "Created ${OUTPUT_DIR}"

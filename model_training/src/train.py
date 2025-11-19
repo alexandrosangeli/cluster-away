@@ -80,7 +80,7 @@ def main():
     data.import_pdb(datafiles)
     data.fix_terminal()
     data.atomselect(atoms=["N", "CA", "CB", "C", "O"])
-    dataset = data.prepare_dataset()
+    data.prepare_dataset()
     data.write_statistics(f"{output_dir}/data_statistics.json") # Save mean and std for analysis later
     
     trainer = OpenMM_Physics_Trainer(device=device)
