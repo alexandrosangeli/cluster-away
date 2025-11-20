@@ -90,6 +90,13 @@ def main():
         help='Optional description of the current experiment'
     )
 
+    parser.add_argument(
+        '--request_gpu', 
+        type=int, 
+        required=True,
+        help='Flag 0/1 whether GPU was requested'
+    )
+
     args = parser.parse_args()
     num_iters = args.num_iters
     scale_factor = args.grid_scale_factor
@@ -102,6 +109,7 @@ def main():
     autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
     timestamp = args.timestamp
     verbose = False
+    request_gpu = args.request_gpu
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
@@ -119,11 +127,13 @@ def main():
         python_version=sys.version,
         torch_version=torch.__version__,
         device=str(device),
+        request_gpu=request_gpu,
         description=args.description
     )
 
+    assert request_gpu in [0, 1], "--request_gpu should take the value of 0 or 1"
+    assert (not request_gpu) or (torch.cuda.is_available() == request_gpu), "GPU was requested but is not available"
     torch.manual_seed(2025)
-    print(f"{device=}")
 
     batch_size=8
 
