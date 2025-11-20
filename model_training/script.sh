@@ -89,7 +89,8 @@ python3 src/train.py \
     --data_path=${DATA_SCRATCH}/proteins \
     --pdbs MurD_closed.pdb MurD_open.pdb \
     --autoencoder=fold_net \
-    --timestamp=${TIMESTAMP}
+    --timestamp=${TIMESTAMP} \
+    --request_gpu=1
 
 
 PYTHON_EXIT_STATUS=$? 

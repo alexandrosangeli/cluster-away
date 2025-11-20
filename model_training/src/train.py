@@ -60,6 +60,13 @@ def main():
         help='Optional description of the current experiment'
     )
 
+    parser.add_argument(
+        '--request_gpu', 
+        type=int, 
+        required=True,
+        help='Flag 0/1 whether GPU was requested'
+    )
+
     args = parser.parse_args()
     output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
     data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
@@ -69,6 +76,8 @@ def main():
     model_kwargs = AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS[args.autoencoder]
     patience = 16
     timestamp = args.timestamp
+    request_gpu = args.request_gpu
+
 
     log_params(
         path=output_dir,
@@ -81,8 +90,13 @@ def main():
         python_version=sys.version,
         torch_version=torch.__version__,
         device=str(device),
+        request_gpu=request_gpu,
         description=args.description,
     )
+
+    assert request_gpu in [0, 1], "--request_gpu should take the value of 0 or 1"
+    assert (not request_gpu) or (torch.cuda.is_available() == request_gpu), "GPU was requested but is not available"
+
 
     data = PDBData()
     data.import_pdb(datafiles)
