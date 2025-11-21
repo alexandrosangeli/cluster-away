@@ -10,96 +10,20 @@
 #SBATCH -t 2:00:00  # time requested in hour:minute:seconds
 #SBATCH --cpus-per-task=8
 
-set -e # fail fast
-
-export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-export PYTHON_EXIT_STATUS=-1
-export EXPERIMENT_TYPE=$(basename "$PWD")
-
-cleanup() {
-    echo "Starting guaranteed cleanup..."
-    
-    # Check the exit status of the Python script
-    if [ "${PYTHON_EXIT_STATUS}" -eq 0 ]; then
-        echo "Python script succeeded."
-        OUTPUT_HOME=${PWD}/../experiments/${EXPERIMENT_TYPE}
-        mkdir -p ${OUTPUT_HOME}
-        echo "Created ${OUTPUT_HOME} to save outputs"
-        rsync --archive --update --compress --progress ${OUTPUT_DIR} ${OUTPUT_HOME}
-
-    else
-        echo "Python script **failed** with exit code ${PYTHON_EXIT_STATUS}."
-    fi
-
-    echo "Removing ${OUTPUT_DIR}"
-    rm -rf ${OUTPUT_DIR}
-    echo "Removing ${DATA_SCRATCH}"
-    rm -rf ${DATA_SCRATCH}
-    echo "Cleanup also done"
+run_experiment() {
+    python3 src/drifts_experiment.py \
+        --checkpoint_file=${DATA_SCRATCH}/models/checkpoints/foldingnet/checkpoint_no_optimizer_state_dict_epoch167_loss0.003259085263643.ckpt \
+        --data_path=${DATA_SCRATCH}/proteins \
+        --num_iters=100 \
+        --grid_scale_factor=0.5 \
+        --resolution=50 \
+        --pdbs MurD_closed.pdb MurD_open.pdb \
+        --output_dir=${OUTPUT_DIR} \
+        --autoencoder=fold_net \
+        --timestamp=${TIMESTAMP} \
+        --request_gpu=1 \
+        --verbose=0 \
+        --gif=0
 }
 
-export MOLEARN_PATH=/home/${USER}/repos/molearn
-export SCRATCH_HOME=/disk/scratch/${USER}
-export DATA_HOME=${PWD}/../data
-export EXP_HOME=${PWD}/../experiments
-export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${TIMESTAMP}
-export OUTPUT_DIR=${SCRATCH_HOME}/experiments/experiment_${TIMESTAMP}
-
-
-# Check for the -g flag
-if [[ "$*" == *"-g"* ]]; then
-    CONDA_ENV_NAME="molearn-gpu"
-else
-    CONDA_ENV_NAME="molearn"
-fi
-
-source /home/${USER}/miniconda3/bin/activate ${CONDA_ENV_NAME}
-
-echo "Activated ${CONDA_ENV_NAME}"
-
-if python3 -c "import molearn" 2>/dev/null; then
-    echo "Molearn is already installed."
-else
-    echo "Molearn not found. Installing from source..."
-    python3 -m pip install "$MOLEARN_PATH"
-    echo "Molearn installation complete."
-fi
-
-dt=$(date '+%d_%m_%y_%H_%M');
-echo "I am job ${SLURM_JOB_ID}."
-echo "I'm running on ${SLURM_JOB_NODELIST}."
-echo "Job started at ${dt}."
-
-# ====================
-# RSYNC data from /home/ to /disk/scratch/
-# ====================
-mkdir -p ${DATA_SCRATCH}
-rsync --archive --update --compress ${DATA_HOME}/ ${DATA_SCRATCH}
-rsync --archive --update --compress ${EXP_HOME}/ ${DATA_SCRATCH}
-
-mkdir -p ${OUTPUT_DIR}
-echo "Created ${OUTPUT_DIR}"
-
-trap cleanup EXIT
-echo "Running Python script..."
-set +e
-python3 src/drifts_experiment.py \
-    --checkpoint_file=${DATA_SCRATCH}/models/checkpoints/foldingnet/checkpoint_no_optimizer_state_dict_epoch167_loss0.003259085263643.ckpt \
-    --data_path=${DATA_SCRATCH}/proteins \
-    --num_iters=100 \
-    --grid_scale_factor=0.5 \
-    --resolution=50 \
-    --pdbs MurD_closed.pdb MurD_open.pdb \
-    --output_dir=${OUTPUT_DIR} \
-    --autoencoder=fold_net \
-    --timestamp=${TIMESTAMP} \
-    --request_gpu=1 \
-    --verbose=0 \
-    --gif=0
-
-
-PYTHON_EXIT_STATUS=$? 
-set -e
-
-echo "Job is done"
-exit "${PYTHON_EXIT_STATUS}"
+source ../main_script/main_script.sh

@@ -1,7 +1,7 @@
 __pycache__
 experiments/
 *.pdb
-script_local.sh
+*local.sh
 *.png
 *.svg
 *.gif
