@@ -81,7 +81,6 @@ def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
     ax.set_xlabel('z_1')
     ax.set_ylabel('z_2')
     ax.grid(True, linestyle='', alpha=0.5)
-    ax.set_aspect('equal', adjustable='datalim') 
 
     imgformat = "png"
     final_filename = f'{output_dir}/{timestamp}_trajectories_plot.{imgformat}'
