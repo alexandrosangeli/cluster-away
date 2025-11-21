@@ -2,7 +2,6 @@ from utils import get_data, decode_encode, batched_encode, plot_drifting
 import torch
 from molearn.models.CNN_autoencoder import AutoEncoder as ConvolutionalAE
 from molearn.models.foldingnet import AutoEncoder as FoldingNet
-import argparse
 import sys
 import os
 import json
@@ -45,7 +44,7 @@ def main(args):
     model.eval()
     model.to(device)
 
-    data = get_data(datafiles).dataset[:32]
+    data = get_data(datafiles).dataset
     data = data.to(device)
     num_atoms = data.size(1)
 
