@@ -13,90 +13,26 @@ import argparse
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(current_dir, '..', '..') 
 sys.path.append(root_dir)
-from generic_utils.utils import log_params, AUTOENCODER_SELLECTION, AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS
+from generic_utils.utils import AUTOENCODER_SELLECTION, AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS
+from generic_utils.cli_utils import parse_all_args
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Model training job")
+def main(args):
+    # parser = argparse.ArgumentParser(description="Model training job")
 
-    parser.add_argument(
-        '--output_dir',
-        type=str,
-        required=True
-    )
-
-    parser.add_argument(
-        '--data_path', 
-        type=str, 
-        required=True,
-        help='The path with the data'
-    )
-
-    parser.add_argument(
-        '--pdbs',
-        type=str,
-        nargs='+',  # Accepts one or more files
-        help='Specify one or more PDBS'
-    )
-
-    parser.add_argument(
-        '--autoencoder', 
-        type=str, 
-        required=True,
-        help='The autoencoder type'
-    )
-
-    parser.add_argument(
-        '--timestamp', 
-        type=str, 
-        required=True,
-        help='The current timestamp'
-    )
-
-    parser.add_argument(
-        '--description', 
-        type=str, 
-        default="",
-        help='Optional description of the current experiment'
-    )
-
-    parser.add_argument(
-        '--request_gpu', 
-        type=int, 
-        required=True,
-        help='Flag 0/1 whether GPU was requested'
-    )
-
-    args = parser.parse_args()
-    output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
-    data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
-    datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
-    model_kwargs = AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS[args.autoencoder]
+    data_path = args['data_path']
+    datafiles = args['datafiles']
+    output_dir = args['output_dir']
+    device = args['device']
+    autoencoder_of_choice = args['autoencoder_of_choice']
+    timestamp = args['timestamp']
+    request_gpu = args['request_gpu']
+    description = args['description']
+    verbose = args['verbose']
+    
+    # Experiment specific
+    model_kwargs = AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS[args['autoencoder']]
     patience = 16
-    timestamp = args.timestamp
-    request_gpu = args.request_gpu
-
-
-    log_params(
-        path=output_dir,
-        experiment=sys.argv[0],
-        output_dir=output_dir,
-        datafiles=datafiles,
-        autoencoder_of_choice=str(autoencoder_of_choice),
-        model_kwargs=model_kwargs,
-        patience=patience,
-        python_version=sys.version,
-        torch_version=torch.__version__,
-        device=str(device),
-        request_gpu=request_gpu,
-        description=args.description,
-    )
-
-    assert request_gpu in [0, 1], "--request_gpu should take the value of 0 or 1"
-    assert (not request_gpu) or (torch.cuda.is_available() == request_gpu), "GPU was requested but is not available"
-
 
     data = PDBData()
     data.import_pdb(datafiles)
@@ -130,7 +66,8 @@ def main():
 
 if __name__ == "__main__":
     start_time = time.time()
-    main()
+    args = parse_all_args(description="Model training experiment arg parser", experiment=sys.argv[0])
+    main(args)
     end_time = time.time()
     duration_seconds = end_time - start_time
     minutes = math.floor(duration_seconds / 60) 

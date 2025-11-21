@@ -14,12 +14,23 @@ AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS = {
     "fold_net" : {"out_points" : 2145}
 }
 
-
-def log_params(path, **params):
+def log_params(**params):
     print("--- Parameters ---")
-    print(json.dumps(params, indent=4))
+    log_path = params['log_path']
+    print(json.dumps(params, indent=4, cls=__ParamsEncoder))
     print("------------------")
-    filename = f"{path}/params.json"
+    filename = f"{log_path}/params.json"
     with open(filename, 'w') as f:
-            json.dump(params, f, indent=4)
+            json.dump(params, f, indent=4, cls=__ParamsEncoder)
     print(f"Parameters successfully written to: {filename}")
+
+
+class __ParamsEncoder(json.JSONEncoder):
+    """
+    Custom JSONEncoder to handle objects (e.g. torch.device) 
+    """
+    def default(self, obj):
+        try:
+            return super().default(obj)
+        except TypeError:
+            return str(obj)

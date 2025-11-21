@@ -14,129 +14,32 @@ import time
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(current_dir, '..', '..') 
 sys.path.append(root_dir)
-from generic_utils.utils import log_params, AUTOENCODER_SELLECTION
+from generic_utils.utils import AUTOENCODER_SELLECTION
+from generic_utils.cli_utils import parse_all_args
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Encode-Decode job")
+def main(args):
 
-    parser.add_argument(
-        '--checkpoint_file', 
-        type=str, 
-        required=True,  # this should be true
-        help='The checkpoint (ckpt) file for the model'
-    )
+    data_path = args['data_path']
+    datafiles = args['datafiles']
+    output_dir = args['output_dir']
+    device = args['device']
+    autoencoder_of_choice = args['autoencoder_of_choice']
+    timestamp = args['timestamp']
+    request_gpu = args['request_gpu']
+    description = args['description']
+    verbose = args['verbose']
 
-    parser.add_argument(
-        '--data_path', 
-        type=str, 
-        required=True,  # this should be true
-        help='The path with the data'
-    )
-
-    parser.add_argument(
-        '--num_iters', 
-        type=int, 
-        required=True,  # this should be true
-        help='Number of decoding-encoding iterations'
-    )
-
-    parser.add_argument(
-        '--grid_scale_factor', 
-        type=float, 
-        default=1.0,  # this should be true
-        help='Scale factor to expand the grid by'
-    )
-
-    parser.add_argument(
-        '--resolution', 
-        type=int, 
-        default=25,  # this should be true
-        help='Resolution as number of points generate in linspace'
-    )
-
-    parser.add_argument(
-        '--pdbs',
-        type=str,
-        nargs='+',  # Accepts one or more files
-        help='Specify one or more PDBS'
-    )
-
-    parser.add_argument(
-        '--output_dir',
-        type=str,
-        required=True,  # this should be true
-        help='Specify the path to save any output'
-    )
-
-    parser.add_argument(
-        '--autoencoder', 
-        type=str, 
-        required=True,
-        help='The autoencoder type'
-    )
-
-    parser.add_argument(
-        '--timestamp', 
-        type=str, 
-        required=True,
-        help='The current timestamp'
-    )
-
-    parser.add_argument(
-        '--description', 
-        type=str, 
-        default="",
-        help='Optional description of the current experiment'
-    )
-
-    parser.add_argument(
-        '--request_gpu', 
-        type=int, 
-        required=True,
-        help='Flag 0/1 whether GPU was requested'
-    )
-
-    args = parser.parse_args()
-    num_iters = args.num_iters
-    scale_factor = args.grid_scale_factor
-    res = args.resolution
-    checkpoint_file = args.checkpoint_file
-    data_path = args.data_path if args.data_path[-1] != '/' else args.data_path[:-1]
-    datafiles = [f'{data_path}/{pdb}' for pdb in args.pdbs]
-    output_dir = args.output_dir if args.output_dir[-1] != '/' else args.output_dir[:-1]
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    autoencoder_of_choice = AUTOENCODER_SELLECTION[args.autoencoder]
-    timestamp = args.timestamp
-    verbose = False
-    request_gpu = args.request_gpu
+    # Experiment specific
+    num_iters = args['num_iters']
+    scale_factor = args['grid_scale_factor']
+    res = args['resolution']
+    checkpoint_file = args['checkpoint_file']
 
     assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
 
-    log_params(
-        path=output_dir,
-        experiment=sys.argv[0],
-        output_dir=output_dir,
-        datafiles=datafiles,
-        autoencoder_of_choice=str(autoencoder_of_choice),
-        checkpoint_file=checkpoint_file,
-        resolution=res,
-        scale_factor=scale_factor,
-        num_iters=num_iters,
-        verbose=verbose,
-        python_version=sys.version,
-        torch_version=torch.__version__,
-        device=str(device),
-        request_gpu=request_gpu,
-        description=args.description
-    )
-
-    assert request_gpu in [0, 1], "--request_gpu should take the value of 0 or 1"
-    assert (not request_gpu) or (torch.cuda.is_available() == request_gpu), "GPU was requested but is not available"
     torch.manual_seed(2025)
-
     batch_size=8
-
     checkpoint = torch.load(checkpoint_file, map_location=torch.device('cpu'), weights_only=False)
     model = autoencoder_of_choice(**checkpoint['network_kwargs'])
     model.load_state_dict(checkpoint['model_state_dict'])
@@ -148,13 +51,10 @@ def main():
     num_atoms = data.size(1)
 
     initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=verbose)
-
     min_x = torch.min(initial_z.squeeze()[:, 0]) - (torch.min(initial_z.squeeze()[:, 0]) * scale_factor)
     min_y = torch.min(initial_z.squeeze()[:, 1]) - (torch.min(initial_z.squeeze()[:, 1]) * scale_factor)
     max_x = torch.max(initial_z.squeeze()[:, 0]) + (torch.max(initial_z.squeeze()[:, 0]) * scale_factor)
     max_y = torch.max(initial_z.squeeze()[:, 1]) + (torch.max(initial_z.squeeze()[:, 1]) * scale_factor)
-
-
     x_lin = torch.linspace(min_x, max_x, res, device=device)
     y_lin = torch.linspace(min_y, max_y, res, device=device)
     X, Y = torch.meshgrid(x_lin, y_lin, indexing='xy')
@@ -172,7 +72,8 @@ def main():
 
 if __name__ == "__main__":
     start_time = time.time()
-    main()
+    args = parse_all_args(description="Drift experiment arg parser", experiment=sys.argv[0])
+    main(args)
     end_time = time.time()
     duration_seconds = end_time - start_time
     minutes = math.floor(duration_seconds / 60) 
