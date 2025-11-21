@@ -39,17 +39,17 @@ def calculate_drift_coords(start, end, norm=False):
     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters, output_dir, res, timestamp, min_x=None, max_x=None, min_y=None, max_y=None, gif=True):
+def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     fig, ax = plt.subplots(figsize=(8, 8)) # Use a smaller figure size for GIF frames
     
-    if None not in [min_x, max_x, min_y, max_y]:
-        x_min, x_max, y_min, y_max = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
-        padding_x = 0.1 * (x_max - x_min)
-        padding_y = 0.1 * (y_max - y_min)
-        ax.set_xlim(x_min - padding_x, x_max + padding_x)
-        ax.set_ylim(y_min - padding_y, y_max + padding_y)
+    # if None not in [min_x, max_x, min_y, max_y]:
+    #     x_min, x_max, y_min, y_max = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
+    #     padding_x = 0.1 * (x_max - x_min)
+    #     padding_y = 0.1 * (y_max - y_min)
+    #     ax.set_xlim(x_min - padding_x, x_max + padding_x)
+    #     ax.set_ylim(y_min - padding_y, y_max + padding_y)
 
     # Iterate from the first step (i=0) up to the final step (i=num_iters - 1)
     for i in range(num_iters):
@@ -83,9 +83,10 @@ def plot_drifting(z, num_iters, output_dir, res, timestamp, min_x=None, max_x=No
     ax.grid(True, linestyle='', alpha=0.5)
     ax.set_aspect('equal', adjustable='box') 
 
-    final_filename = f'{output_dir}/{timestamp}_trajectories_plot.svg'
+    imgformat = "png"
+    final_filename = f'{output_dir}/{timestamp}_trajectories_plot.{imgformat}'
     print(f"Saving final plot in {final_filename}")
-    plt.savefig(final_filename, format='svg')
+    plt.savefig(final_filename, format=imgformat)
     plt.close(fig)
     
     if gif:

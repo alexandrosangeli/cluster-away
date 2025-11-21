@@ -35,8 +35,7 @@ def main(args):
     scale_factor = args['grid_scale_factor']
     res = args['resolution']
     checkpoint_file = args['checkpoint_file']
-
-    assert res > 1, "Resolution must be greater than 1 otherwise the code will fail"
+    gif = args['gif']
 
     torch.manual_seed(2025)
     batch_size=8
@@ -65,7 +64,7 @@ def main(args):
     torch.save(endings['encodings'][-1, :, :], f"{output_dir}/{timestamp}_encodings.pt")
     print(f"Saved encodings in {output_dir}/{timestamp}_encodings.pt")
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, timestamp=timestamp, min_x=None, max_x=max_x, min_y=min_y, max_y=max_y, gif=True)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, timestamp=timestamp, gif=gif)
 
     print("Script complete. Exiting.")
     return 0

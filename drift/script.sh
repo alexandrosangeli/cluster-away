@@ -93,7 +93,9 @@ python3 src/drifts_experiment.py \
     --output_dir=${OUTPUT_DIR} \
     --autoencoder=fold_net \
     --timestamp=${TIMESTAMP} \
-    --request_gpu=1
+    --request_gpu=1 \
+    --verbose=0 \
+    --gif=0
 
 
 PYTHON_EXIT_STATUS=$? 

@@ -90,7 +90,8 @@ python3 src/train.py \
     --pdbs MurD_closed.pdb MurD_open.pdb \
     --autoencoder=fold_net \
     --timestamp=${TIMESTAMP} \
-    --request_gpu=1
+    --request_gpu=1 \
+    --verbose=0
 
 
 PYTHON_EXIT_STATUS=$? 
