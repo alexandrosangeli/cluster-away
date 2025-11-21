@@ -43,7 +43,7 @@ def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     fig, ax = plt.subplots(figsize=(8, 8)) # Use a smaller figure size for GIF frames
-    
+
     # if None not in [min_x, max_x, min_y, max_y]:
     #     x_min, x_max, y_min, y_max = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
     #     padding_x = 0.1 * (x_max - x_min)
@@ -81,7 +81,7 @@ def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
     ax.set_xlabel('z_1')
     ax.set_ylabel('z_2')
     ax.grid(True, linestyle='', alpha=0.5)
-    ax.set_aspect('equal', adjustable='box') 
+    ax.set_aspect('equal', adjustable='datalim') 
 
     imgformat = "png"
     final_filename = f'{output_dir}/{timestamp}_trajectories_plot.{imgformat}'
