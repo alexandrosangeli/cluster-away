@@ -1,4 +1,4 @@
-from utils import get_data, decode_encode, batched_encode, plot_drifting
+from utils import decode_encode, batched_encode, plot_drifting
 import torch
 from molearn.models.CNN_autoencoder import AutoEncoder as ConvolutionalAE
 from molearn.models.foldingnet import AutoEncoder as FoldingNet
@@ -13,7 +13,7 @@ import time
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(current_dir, '..', '..') 
 sys.path.append(root_dir)
-from generic_utils.utils import AUTOENCODER_SELLECTION
+from generic_utils.utils import AUTOENCODER_SELLECTION, get_data
 from generic_utils.cli_utils import parse_all_args
 
 

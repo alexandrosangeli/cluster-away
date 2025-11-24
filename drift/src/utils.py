@@ -1,42 +1,41 @@
 import torch
-from molearn.data import PDBData
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import os
 
 
-def get_data(datafiles, atoms_select=True):
-    print("Loading data...")
-    data = PDBData()
-    data.import_pdb(datafiles)
-    if atoms_select:
-        data.atomselect(atoms=['CA', 'C', 'CB', 'N', 'O'])
-    data.prepare_dataset()
-    print("Data loaded.")
-    return data
+# def get_data(datafiles, atoms_select=True):
+#     print("Loading data...")
+#     data = PDBData()
+#     data.import_pdb(datafiles)
+#     if atoms_select:
+#         data.atomselect(atoms=['CA', 'C', 'CB', 'N', 'O'])
+#     data.prepare_dataset()
+#     print("Data loaded.")
+#     return data
 
 
-def plot_z(z):
-    """ z is a torch tensor (num_z, 2)"""
-    # data = torch.stack(z).detach().numpy()
-    data = z.detach().numpy()
-    plt.figure(figsize=(8, 6))
-    plt.scatter(data[:, 0], data[:, 1], marker='o')
-    plt.title('')
-    plt.xlabel('z_1')
-    plt.ylabel('z_2')
-    plt.grid(False)
-    plt.show()
+# def plot_z(z):
+#     """ z is a torch tensor (num_z, 2)"""
+#     # data = torch.stack(z).detach().numpy()
+#     data = z.detach().numpy()
+#     plt.figure(figsize=(8, 6))
+#     plt.scatter(data[:, 0], data[:, 1], marker='o')
+#     plt.title('')
+#     plt.xlabel('z_1')
+#     plt.ylabel('z_2')
+#     plt.grid(False)
+#     plt.show()
 
-def calculate_drift_coords(start, end, norm=False):
-    start = start.detach()
-    end = end.detach()
+# def calculate_drift_coords(start, end, norm=False):
+#     start = start.detach()
+#     end = end.detach()
 
-    X = start[:, 0]
-    Y = start[:, 1]
-    U = end[:, 0] - X
-    V = end[:, 1] - Y
-    return {"start" : (X, Y), "end" : (U, V)}
+#     X = start[:, 0]
+#     Y = start[:, 1]
+#     U = end[:, 0] - X
+#     V = end[:, 1] - Y
+#     return {"start" : (X, Y), "end" : (U, V)}
     
 
 def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):

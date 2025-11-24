@@ -8,7 +8,6 @@ import os
 import sys
 import math
 import torch
-import argparse
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(current_dir, '..', '..') 
