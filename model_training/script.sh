@@ -18,7 +18,8 @@ run_experiment() {
         --autoencoder=fold_net \
         --timestamp=${TIMESTAMP} \
         --request_gpu=1 \
-        --verbose=0
+        --verbose=0 \
+        --git="Branch:Commit ID --> ${BRANCH}:${COMMITID}"
 }
 
 source ../main_script/main_script.sh

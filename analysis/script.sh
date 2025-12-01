@@ -20,7 +20,8 @@ run_experiment() {
         --timestamp=${TIMESTAMP} \
         --request_gpu=1 \
         --verbose=0 \
-        --description="Analysing model"
+        --description="Analysing model" \
+        --git="Branch:Commit ID --> ${BRANCH}:${COMMITID}"
 }
 
 source ../main_script/main_script.sh
