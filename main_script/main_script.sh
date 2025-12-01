@@ -35,8 +35,9 @@ export DATA_HOME=${PWD}/../data
 export EXP_HOME=${PWD}/../experiments
 export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${TIMESTAMP}
 export OUTPUT_DIR=${SCRATCH_HOME}/experiments/experiment_${TIMESTAMP}
-export BRANCH=$(git -C "$MOLEARN_PATH" branch --show-current)
-export COMMITID=$(git -C "$MOLEARN_PATH" rev-parse --short HEAD)
+export MOLEARN_BRANCH=$(git -C "$MOLEARN_PATH" branch --show-current)
+export MOLEARN_COMMITID=$(git -C "$MOLEARN_PATH" rev-parse --short HEAD)
+export THIS_COMMITIT=$(git rev-parse --short HEAD)
 
 # Check for the -g flag
 if [[ "$*" == *"-g"* ]]; then

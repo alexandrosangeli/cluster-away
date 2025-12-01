@@ -19,7 +19,8 @@ run_experiment() {
         --timestamp=${TIMESTAMP} \
         --request_gpu=1 \
         --verbose=0 \
-        --git="Branch:Commit ID --> ${BRANCH}:${COMMITID}"
+        --molearn_git="Branch:Commit ID --> ${MOLEARN_BRANCH}:${MOLEARN_COMMITID}" \
+        --cluster_away_git="This Commit ID: ${THIS_COMMITIT}"
 }
 
 source ../main_script/main_script.sh

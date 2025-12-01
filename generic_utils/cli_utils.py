@@ -15,7 +15,9 @@ def get_common_parser():
     parser.add_argument('--description', type=str, default="", help='Optional description of the current experiment')
     parser.add_argument('--request_gpu', type=int, required=False, help='Flag 0/1 whether GPU was requested')
     parser.add_argument('--verbose', type=int, required=False, help='Verbosity flag')
-    parser.add_argument('--git', type=str, required=False, help="A string with the checked-out branch of molearn and its last commit id")
+    parser.add_argument('--molearn_git', type=str, required=False, help="A string with the checked-out branch of molearn and its last commit id")
+    parser.add_argument('--cluster_away_git', type=str, required=False, help="A string with the last commit id of this git repository")
+
     # drifts_experiment
     parser.add_argument('--checkpoint_file', type=str, help='The checkpoint (ckpt) file for the model') 
     parser.add_argument('--num_iters', type=int, help="Number of decoding-encoding iterations")
