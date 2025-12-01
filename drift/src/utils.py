@@ -41,6 +41,8 @@ import os
 def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
+    alpha = min(1e-6, alpha)
+    alpha = max(1, alpha)
     fig, ax = plt.subplots(figsize=(8, 8)) # Use a smaller figure size for GIF frames
 
     # if None not in [min_x, max_x, min_y, max_y]:
