@@ -26,6 +26,7 @@ cleanup() {
     echo "Removing ${DATA_SCRATCH}"
     rm -rf ${DATA_SCRATCH}
     echo "Cleanup also done"
+    echo "Exit code: $PYTHON_EXIT_STATUS"
 }
 
 export MOLEARN_PATH=/home/${USER}/repos/molearn
