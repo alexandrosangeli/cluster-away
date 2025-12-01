@@ -55,10 +55,10 @@ def main(args):
     max_x = torch.max(initial_z.squeeze()[:, 0])
     max_y = torch.max(initial_z.squeeze()[:, 1])
 
-    min_x = min_x - (grid_scale_factor * abs(min_x))
-    min_y = min_y - (grid_scale_factor * abs(min_y))
-    max_x = max_x + (grid_scale_factor * abs(max_x))
-    max_y = max_y + (grid_scale_factor * abs(max_y))
+    min_x = min_x - (scale_factor * abs(min_x))
+    min_y = min_y - (scale_factor * abs(min_y))
+    max_x = max_x + (scale_factor * abs(max_x))
+    max_y = max_y + (scale_factor * abs(max_y))
 
 
     x_lin = torch.linspace(min_x, max_x, res, device=device)
