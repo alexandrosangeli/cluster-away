@@ -12,6 +12,10 @@ from generic_utils.utils import AUTOENCODER_SELLECTION, get_data
 from generic_utils.cli_utils import parse_all_args
 
 
+
+import matplotlib.pyplot as plt
+
+
 def main(args):
     device = args['device']
     training_datafiles = args['datafiles']
@@ -40,11 +44,50 @@ def main(args):
     # Starting analysis ops
     err = MA.get_error('training')
 
-    print(err)
+    print(f"{err.shape=}, {err.mean()=}")
+    n_samples = 10
+
+    grid_bounds = (14., 22., 0., -10.) # these just seemed to cover the DOPE space well
+    MA.setup_grid(n_samples, bounds=grid_bounds)
+
+    dope_grid_err, xs, ys = MA.scan_dope()
+    print(f"{dope_grid_err.shape=}")
+    plot_matrix(dope_grid_err, xs, ys, "DOPE", output_dir)
+
+    rama_grid_err, xs, ys = MA.scan_ramachandran()
+    print(f"{rama_grid_err.shape=}")
+    plot_matrix(rama_grid_err.reshape(n_samples, n_samples), xs, ys, "Ramachandran", output_dir)
+
+
+def plot_matrix(matrix, xs, ys, metric, output_dir, label_axis=False):
+    fig, ax = plt.subplots()
+    c = ax.pcolormesh(
+        matrix, 
+        cmap='viridis',
+        shading='auto'
+    )
+    fig.colorbar(c, ax=ax, label=f'{metric} value')
+    ax.set_title("title")
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    N = len(xs)
+
+    ax.set_xticks(torch.arange(N) + 0.5)
+    ax.set_yticks(torch.arange(N) + 0.5)
+
+    formatted_xs = [f"{x:.1f}" for x in xs]
+    formatted_ys = [f"{y:.1f}" for y in ys]
+
+    if label_axis: # false by default
+        ax.set_xticklabels(formatted_xs)
+        ax.set_yticklabels(formatted_ys)
+        plt.setp(ax.get_xticklabels(), rotation=90, ha="right", rotation_mode="anchor")
+
+    filename = f"{output_dir}/{metric}_plot.png"
+    plt.savefig(filename)
+    plt.close(fig)
+    print(f"Saved {metric} plot in {filename}")
     
-
-
-
 
 if __name__ == "__main__":
     start_time = time.time()
