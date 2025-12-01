@@ -49,10 +49,18 @@ def main(args):
     num_atoms = data.size(1)
 
     initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=verbose)
-    min_x = torch.min(initial_z.squeeze()[:, 0]) - (torch.min(initial_z.squeeze()[:, 0]) * scale_factor)
-    min_y = torch.min(initial_z.squeeze()[:, 1]) - (torch.min(initial_z.squeeze()[:, 1]) * scale_factor)
-    max_x = torch.max(initial_z.squeeze()[:, 0]) + (torch.max(initial_z.squeeze()[:, 0]) * scale_factor)
-    max_y = torch.max(initial_z.squeeze()[:, 1]) + (torch.max(initial_z.squeeze()[:, 1]) * scale_factor)
+
+    min_x = torch.min(initial_z.squeeze()[:, 0])
+    min_y = torch.min(initial_z.squeeze()[:, 1])
+    max_x = torch.max(initial_z.squeeze()[:, 0])
+    max_y = torch.max(initial_z.squeeze()[:, 1])
+
+    min_x = min_x * (1 + scale_factor)
+    min_y = min_y * (1 + scale_factor)
+    max_x = max_x * (1 + scale_factor)
+    max_y = max_y * (1 + scale_factor)
+
+
     x_lin = torch.linspace(min_x, max_x, res, device=device)
     y_lin = torch.linspace(min_y, max_y, res, device=device)
     X, Y = torch.meshgrid(x_lin, y_lin, indexing='xy')
