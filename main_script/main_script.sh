@@ -37,7 +37,7 @@ export DATA_SCRATCH=${SCRATCH_HOME}/experiments/data_${SLURM_JOB_ID}
 export OUTPUT_DIR=${SCRATCH_HOME}/experiments/experiment_${SLURM_JOB_ID}
 export MOLEARN_BRANCH=$(git -C "$MOLEARN_PATH" branch --show-current)
 export MOLEARN_COMMITID=$(git -C "$MOLEARN_PATH" rev-parse --short HEAD)
-export THIS_COMMITIT=$(git rev-parse --short HEAD)
+export THIS_COMMITID=$(git rev-parse --short HEAD)
 
 # Check for the -g flag
 if [[ "$*" == *"-g"* ]]; then

@@ -22,7 +22,7 @@ run_experiment() {
         --verbose=0 \
         --description="Analysing model" \
         --molearn_git="Branch:Commit ID --> ${MOLEARN_BRANCH}:${MOLEARN_COMMITID}" \
-        --cluster_away_git="This Commit ID: ${THIS_COMMITIT}"
+        --cluster_away_git="This Commit ID: ${THIS_COMMITID}"
 }
 
 source ../main_script/main_script.sh
