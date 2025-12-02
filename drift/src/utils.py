@@ -38,7 +38,7 @@ import os
 #     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
+def plot_drifting(z, num_iters, output_dir, res, gif=True):
     z = z.cpu()
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     alpha = max(1e-3, alpha)
@@ -67,8 +67,8 @@ def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
 
         if gif:
             curr_end_points = ax.scatter(X_transformed[:, 0], X_transformed[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
-            os.makedirs(f'{output_dir}/gif_{timestamp}', exist_ok=True)
-            frame_filename = f'{output_dir}/gif_{timestamp}/frame_{i:04d}.png'
+            os.makedirs(f'{output_dir}/gif', exist_ok=True)
+            frame_filename = f'{output_dir}/gif/frame_{i:04d}.png'
             ax.set_title(f'Trajectories (Iteration {i+1} / {num_iters})')
             ax.legend()
             plt.savefig(frame_filename, dpi=150)
@@ -84,7 +84,7 @@ def plot_drifting(z, num_iters, output_dir, res, timestamp, gif=True):
     ax.grid(True, linestyle='', alpha=0.5)
 
     imgformat = "png"
-    final_filename = f'{output_dir}/{timestamp}_trajectories_plot.{imgformat}'
+    final_filename = f'{output_dir}/trajectories_plot.{imgformat}'
     print(f"Saving final plot in {final_filename}")
     plt.savefig(final_filename, format=imgformat)
     plt.close(fig)

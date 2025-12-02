@@ -54,8 +54,8 @@ def main(args):
     fit_results = trainer.run_until_converge(
         patience=patience,
         log_filename="log.dat",
-        log_folder=f"{output_dir}/checkpoints_{timestamp}",
-        checkpoint_folder=f"{output_dir}/checkpoints_{timestamp}",
+        log_folder=f"{output_dir}/logs",
+        checkpoint_folder=f"{output_dir}/checkpoints",
         verbose=True,
     )
     print(fit_results)

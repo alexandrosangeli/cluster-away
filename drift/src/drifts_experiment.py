@@ -68,10 +68,11 @@ def main(args):
     startings = torch.stack([X.flatten(), Y.flatten()], dim=1)
     endings = decode_encode(model=model, z=startings, num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=verbose)
     
-    torch.save(endings['encodings'][-1, :, :], f"{output_dir}/{timestamp}_encodings.pt")
-    print(f"Saved encodings in {output_dir}/{timestamp}_encodings.pt")
+    encodings_path = f"{output_dir}/encodings.pt"
+    torch.save(endings['encodings'][-1, :, :], encodings_path)
+    print(f"Saved encodings in {encodings_path}")
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, timestamp=timestamp, gif=gif)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, gif=gif)
 
     print("Script complete. Exiting.")
     return 0
