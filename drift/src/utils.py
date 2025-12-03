@@ -38,16 +38,17 @@ import os
 #     return {"start" : (X, Y), "end" : (U, V)}
     
 
-def plot_drifting(z, num_iters, initial_z, output_dir, res, gif=True):
+def plot_drifting(z, num_iters, initial_z, output_dir, res, gif=True, of=""):
     z = z.cpu()
-    initial_z = initial_z.cpu()
 
     alpha = (-1/30000) * (res**2) + 0.1 # Dynamic alpha based on the resolution
     alpha = max(1e-3, alpha)
     alpha = min(1, alpha)
     fig, ax = plt.subplots(figsize=(8, 8)) # Use a smaller figure size for GIF frames
-
-    ax.scatter(initial_z[:, 0], initial_z[:, 1], color='green', marker='^', s=5, label='Dataset latent points', zorder=5)
+    
+    if initial_z is not None:
+        initial_z = initial_z.cpu()
+        ax.scatter(initial_z[:, 0], initial_z[:, 1], color='green', marker='^', s=5, label='Dataset latent points', zorder=5)
 
     # if None not in [min_x, max_x, min_y, max_y]:
     #     x_min, x_max, y_min, y_max = min_x.cpu(), max_x.cpu(), min_y.cpu(), max_y.cpu()
@@ -71,8 +72,9 @@ def plot_drifting(z, num_iters, initial_z, output_dir, res, gif=True):
 
         if gif:
             curr_end_points = ax.scatter(X_transformed[:, 0], X_transformed[:, 1], color='red', marker='o', s=10, label='End Points', zorder=3)
-            os.makedirs(f'{output_dir}/gif', exist_ok=True)
-            frame_filename = f'{output_dir}/gif/frame_{i:04d}.png'
+            dirpath = f'{output_dir}/gif_{of}'
+            os.makedirs(dirpath, exist_ok=True)
+            frame_filename = f'{dirpath}/frame_{i:04d}.png'
             ax.set_title(f'Trajectories (Iteration {i+1} / {num_iters})')
             ax.legend()
             plt.savefig(frame_filename, dpi=150)
@@ -88,7 +90,7 @@ def plot_drifting(z, num_iters, initial_z, output_dir, res, gif=True):
     ax.grid(True, linestyle='', alpha=0.5)
 
     imgformat = "png"
-    final_filename = f'{output_dir}/trajectories_plot.{imgformat}'
+    final_filename = f'{output_dir}/trajectories_of_{of}_plot.{imgformat}'
     print(f"Saving final plot in {final_filename}")
     plt.savefig(final_filename, format=imgformat)
     plt.close(fig)
