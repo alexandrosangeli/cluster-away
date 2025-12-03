@@ -44,7 +44,7 @@ def main(args):
     model.eval()
     model.to(device)
 
-    data = get_data(datafiles)
+    data = get_data(datafiles).dataset
     data = data.to(device)
     num_atoms = data.size(1)
 
