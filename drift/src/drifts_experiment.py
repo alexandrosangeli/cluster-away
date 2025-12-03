@@ -44,7 +44,7 @@ def main(args):
     model.eval()
     model.to(device)
 
-    data = get_data(datafiles).dataset
+    data = get_data(datafiles).dataset[:32]
     data = data.to(device)
     num_atoms = data.size(1)
 
@@ -72,7 +72,7 @@ def main(args):
     torch.save(endings['encodings'][-1, :, :], encodings_path)
     print(f"Saved encodings in {encodings_path}")
 
-    plot_drifting(z=endings['encodings'], num_iters=num_iters, output_dir=output_dir, res=res, gif=gif)
+    plot_drifting(z=endings['encodings'], num_iters=num_iters, initial_z=initial_z, output_dir=output_dir, res=res, gif=gif)
 
     print("Script complete. Exiting.")
     return 0
