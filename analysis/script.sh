@@ -17,6 +17,7 @@ run_experiment() {
         --pdbs MurD_closed.pdb MurD_open.pdb \
         --output_dir=${OUTPUT_DIR} \
         --autoencoder=fold_net \
+        --resolution=5 \
         --timestamp=${TIMESTAMP} \
         --request_gpu=1 \
         --verbose=0 \
