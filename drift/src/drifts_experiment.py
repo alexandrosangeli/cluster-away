@@ -51,6 +51,7 @@ def main(args):
     initial_z = batched_encode(model=model, dataset=data, batch_size=batch_size, verbose=verbose)
     initial_z_traj = decode_encode(model=model, z=initial_z, num_iters=num_iters, num_atoms=num_atoms, batch_size=batch_size, verbose=verbose)
     plot_drifting(z=initial_z_traj['encodings'], num_iters=num_iters, initial_z=None, output_dir=output_dir, res=res, gif=gif, of="initial_z")
+    # TODO: adjust alphas when ploting initial_z_traj and endings
 
     min_x = torch.min(initial_z.squeeze()[:, 0])
     min_y = torch.min(initial_z.squeeze()[:, 1])

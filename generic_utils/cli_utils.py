@@ -19,10 +19,10 @@ def get_common_parser():
     parser.add_argument('--cluster_away_git', type=str, required=False, help="A string with the last commit id of this git repository")
 
     # drifts_experiment
-    parser.add_argument('--checkpoint_file', type=str, help='The checkpoint (ckpt) file for the model') 
+    parser.add_argument('--checkpoint_file', type=str, help='The checkpoint (ckpt) file for the model') # this is shared by the analysis experiment too
     parser.add_argument('--num_iters', type=int, help="Number of decoding-encoding iterations")
     parser.add_argument('--grid_scale_factor', type=float, help='Scale factor to expand the grid by (0 means no additional expansion)')
-    parser.add_argument('--resolution', type=int, help='Resolution as number of points generated in linspace')
+    parser.add_argument('--resolution', type=int, help='Resolution as number of points generated in linspace') # this is shared by the analysis experiment too
     parser.add_argument('--gif', type=int, required=False, help='Flag 0/1 whether to save all trajectory snapshots')
     return parser
 
