@@ -40,7 +40,6 @@ def main(args):
     model.to(device)
 
     data = get_data(training_datafiles)
-    data.dataset = data.dataset[:8]
     MA = MolearnAnalysis(batch_size=batch_size, processes=processes)
     print(f"{processes=}, {MA.processes=}")
 

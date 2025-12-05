@@ -40,15 +40,21 @@ export MOLEARN_BRANCH=$(git -C "$MOLEARN_PATH" branch --show-current)
 export MOLEARN_COMMITID=$(git -C "$MOLEARN_PATH" rev-parse --short HEAD)
 export THIS_COMMITID=$(git rev-parse --short HEAD)
 
-source /home/${USER}/miniconda3/bin/activate ${CONDA_ENV_NAME}
-echo "Activated ${CONDA_ENV_NAME}"
+export NUM_CORES=$(nproc)
+echo "Available cores: $NUM_CORES"
 
-if python3 -c "import molearn" 2>/dev/null; then
-    echo "Molearn is already installed."
-else
-    echo "Molearn not found. Installing from source..."
-    python3 -m pip install "$MOLEARN_PATH"
-    echo "Molearn installation complete."
+source /home/${USER}/miniconda3/bin/activate ${CONDA_ENV_NAME}
+if [ $? -eq 0 ]; then
+    echo "Activated ${CONDA_ENV_NAME}"
+    pip uninstall molearn -y > /dev/null 2>&1
+    python3 -m pip install "$MOLEARN_PATH" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "Molearn installed."
+    else
+        echo "FAILURE: molearn was not installed"
+    fi
+    else
+    echo "FAILURE: Could not activate ${CONDA_ENV_NAME}"
 fi
 
 dt=$(date '+%d_%m_%y_%H_%M');
