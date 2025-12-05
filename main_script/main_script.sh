@@ -5,6 +5,7 @@ set -e # fail fast
 export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 export PYTHON_EXIT_STATUS=-1
 export EXPERIMENT_TYPE=$(basename "$PWD")
+export CONDA_ENV_NAME="molearn"
 
 cleanup() {
     echo "Starting guaranteed cleanup..."
@@ -39,15 +40,7 @@ export MOLEARN_BRANCH=$(git -C "$MOLEARN_PATH" branch --show-current)
 export MOLEARN_COMMITID=$(git -C "$MOLEARN_PATH" rev-parse --short HEAD)
 export THIS_COMMITID=$(git rev-parse --short HEAD)
 
-# Check for the -g flag
-if [[ "$*" == *"-g"* ]]; then
-    CONDA_ENV_NAME="molearn-gpu"
-else
-    CONDA_ENV_NAME="molearn"
-fi
-
 source /home/${USER}/miniconda3/bin/activate ${CONDA_ENV_NAME}
-
 echo "Activated ${CONDA_ENV_NAME}"
 
 if python3 -c "import molearn" 2>/dev/null; then
