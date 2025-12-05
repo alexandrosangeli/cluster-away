@@ -27,11 +27,10 @@ def main(args):
     checkpoint_file = args['checkpoint_file']
 
     # Experiment specific
-    batch_size = 1
-    processes = 1
+    batch_size = args['batch_size']
+    num_processes = args['num_processes']
+    padding = args['grid_scale_factor']
     n_samples = args['resolution']
-    grid_bounds = (14, 22, 0, -10) # these just seemed to cover the DOPE space well
-    grid_bounds=None
 
     checkpoint = torch.load(checkpoint_file, map_location=torch.device('cpu'), weights_only=False)
     model = autoencoder_of_choice(**checkpoint['network_kwargs'])
@@ -40,12 +39,11 @@ def main(args):
     model.to(device)
 
     data = get_data(training_datafiles)
-    MA = MolearnAnalysis(batch_size=batch_size, processes=processes)
-    print(f"{processes=}, {MA.processes=}")
+    MA = MolearnAnalysis(batch_size=batch_size, processes=num_processes)
 
     MA.set_network(model)
     MA.set_dataset('training', data)
-    MA.setup_grid(n_samples, bounds=grid_bounds)
+    MA.setup_grid(n_samples, bounds=grid_bounds, padding=padding)
 
     plot_violin_rmsd(MA=MA, output_dir=output_dir)
     plot_violin_dope(MA=MA, output_dir=output_dir)

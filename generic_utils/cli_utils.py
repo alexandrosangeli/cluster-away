@@ -18,12 +18,14 @@ def get_common_parser():
     parser.add_argument('--molearn_git', type=str, required=False, help="A string with the checked-out branch of molearn and its last commit id")
     parser.add_argument('--cluster_away_git', type=str, required=False, help="A string with the last commit id of this git repository")
 
-    # drifts_experiment
-    parser.add_argument('--checkpoint_file', type=str, help='The checkpoint (ckpt) file for the model') # this is shared by the analysis experiment too
-    parser.add_argument('--num_iters', type=int, help="Number of decoding-encoding iterations")
-    parser.add_argument('--grid_scale_factor', type=float, help='Scale factor to expand the grid by (0 means no additional expansion)')
-    parser.add_argument('--resolution', type=int, help='Resolution as number of points generated in linspace') # this is shared by the analysis experiment too
-    parser.add_argument('--gif', type=int, required=False, help='Flag 0/1 whether to save all trajectory snapshots')
+    # specific
+    parser.add_argument('--checkpoint_file', type=str, help='The checkpoint (ckpt) file for the model') # drifts_experiment, analysis
+    parser.add_argument('--resolution', type=int, help='Resolution as number of points generated in linspace') # drifts_experiment, analysis
+    parser.add_argument('--num_iters', type=int, help="Number of decoding-encoding iterations") # drifts_experiment
+    parser.add_argument('--grid_scale_factor', type=float, help='Scale factor to expand the grid by (0 means no additional expansion)') # drifts_experiment
+    parser.add_argument('--gif', type=int, required=False, help='Flag 0/1 whether to save all trajectory snapshots') # drifts_experiment
+    parser.add_argument('--num_cores', type=int, help="Number of cores available") # analysis
+    parser.add_argument('--batch_size', type=int, help="Size of batch") # analysis
     return parser
 
 def parse_all_args(description, experiment):

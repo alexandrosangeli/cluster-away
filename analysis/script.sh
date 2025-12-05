@@ -17,7 +17,10 @@ run_experiment() {
         --pdbs MurD_closed.pdb MurD_open.pdb \
         --output_dir=${OUTPUT_DIR} \
         --autoencoder=fold_net \
-        --resolution=5 \
+        --resolution=40 \
+        --grid_scale_factor=0.2 \
+        --num_cores=${NUM_CORES} \
+        --batch_size=16 \
         --timestamp=${TIMESTAMP} \
         --request_gpu=1 \
         --verbose=0 \
