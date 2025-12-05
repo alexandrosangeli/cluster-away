@@ -7,8 +7,8 @@
 #SBATCH --gres=gpu:1  # use 1 GPU
 #SBATCH --mem=14000  # memory in Mb
 #SBATCH --partition=PGR-Standard
-#SBATCH -t 2:00:00  # time requested in hour:minute:seconds
-#SBATCH --cpus-per-task=8
+#SBATCH -t 00:30:00  # time requested in hour:minute:seconds
+#SBATCH --cpus-per-task=32
 
 run_experiment() {
     python3 src/analyse.py \

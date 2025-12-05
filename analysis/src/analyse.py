@@ -28,7 +28,7 @@ def main(args):
 
     # Experiment specific
     batch_size = args['batch_size']
-    num_processes = args['num_processes']
+    num_cores = args['num_cores']
     padding = args['grid_scale_factor']
     n_samples = args['resolution']
 
@@ -43,7 +43,7 @@ def main(args):
 
     MA.set_network(model)
     MA.set_dataset('training', data)
-    MA.setup_grid(n_samples, bounds=grid_bounds, padding=padding)
+    MA.setup_grid(n_samples, padding=padding)
 
     plot_violin_rmsd(MA=MA, output_dir=output_dir)
     plot_violin_dope(MA=MA, output_dir=output_dir)
