@@ -39,7 +39,7 @@ def main(args):
     model.to(device)
 
     data = get_data(training_datafiles)
-    MA = MolearnAnalysis(batch_size=batch_size, processes=num_processes)
+    MA = MolearnAnalysis(batch_size=batch_size, processes=num_cores)
 
     MA.set_network(model)
     MA.set_dataset('training', data)
