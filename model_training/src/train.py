@@ -12,7 +12,7 @@ import torch
 current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(current_dir, '..', '..') 
 sys.path.append(root_dir)
-from generic_utils.utils import AUTOENCODER_SELLECTION, AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS
+from generic_utils.utils import AUTOENCODER_SELLECTION, AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS, get_data
 from generic_utils.cli_utils import parse_all_args
 
 
@@ -31,21 +31,20 @@ def main(args):
     
     # Experiment specific
     model_kwargs = AUTOENCODER_DEFAULT_MANDATORY_ARGUMENTS[args['autoencoder']]
-    patience = 16
+    physics_weight = args['physics_weight']
+    patience = args['patience']
+    batch_size = args['batch_size']
 
-    data = PDBData()
-    data.import_pdb(datafiles)
-    data.fix_terminal()
-    data.atomselect(atoms=["N", "CA", "CB", "C", "O"])
-    data.prepare_dataset()
+    data = get_data(datafiles, fix_terminal=True)
     data.write_statistics(f"{output_dir}/data_statistics.json") # Save mean and std for analysis later
     
-    trainer = OpenMM_Physics_Trainer(device=device)
+    trainer = OpenMM_Physics_Trainer(device=device, physics_inter_weight=physics_weight)
     trainer.set_data(data, 
-                     batch_size=16, 
+                     batch_size=batch_size, 
                      validation_split=0.1, 
                      manual_seed=25,
-                     save_indices=False     # If True, the training/validation split indices will be saved to disk
+                     save_indices=True,
+                     indices_dir=f"{output_dir}/indices"
                      )
     trainer.prepare_physics(remove_NB=True)
     trainer.set_autoencoder(autoencoder_of_choice, **model_kwargs)

@@ -7,7 +7,7 @@
 #SBATCH --gres=gpu:1  # use 1 GPU
 #SBATCH --mem=14000  # memory in Mb
 #SBATCH --partition=PGR-Standard
-#SBATCH -t 2:00:00  # time requested in hour:minute:seconds
+#SBATCH -t 4:00:00  # time requested in hour:minute:seconds
 #SBATCH --cpus-per-task=4
 
 run_experiment() {
@@ -20,7 +20,10 @@ run_experiment() {
         --request_gpu=1 \
         --verbose=0 \
         --molearn_git="Branch:Commit ID --> ${MOLEARN_BRANCH}:${MOLEARN_COMMITID}" \
-        --cluster_away_git="This Commit ID: ${THIS_COMMITID}"
+        --cluster_away_git="This Commit ID: ${THIS_COMMITID}" \
+        --patience=16 \
+        --physics_weight=0.0 \
+        --batch_size=16
 }
 
 source ../main_script/main_script.sh

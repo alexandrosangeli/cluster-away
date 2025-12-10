@@ -25,7 +25,10 @@ def get_common_parser():
     parser.add_argument('--grid_scale_factor', type=float, help='Scale factor to expand the grid by (0 means no additional expansion)') # drifts_experiment
     parser.add_argument('--gif', type=int, required=False, help='Flag 0/1 whether to save all trajectory snapshots') # drifts_experiment
     parser.add_argument('--num_cores', type=int, help="Number of cores available") # analysis
-    parser.add_argument('--batch_size', type=int, help="Size of batch") # analysis
+    parser.add_argument('--batch_size', type=int, help="Size of batch") # analysis, model_training
+    parser.add_argument('--patience', type=int, help="Trainer's patience") # model_training
+    parser.add_argument('--physics_weight', type=float, help='The weight of the physics loss on the loss function') # model_training
+
     return parser
 
 def parse_all_args(description, experiment):
