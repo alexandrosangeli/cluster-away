@@ -25,10 +25,10 @@ def log_params(**params):
             json.dump(params, f, indent=4, cls=__ParamsEncoder)
     print(f"Parameters successfully written to: {filename}")
 
-def get_data(datafiles, atoms_select=True, fix_terminal=False):
+def get_data(datafiles, topology=None, atoms_select=True, fix_terminal=True):
     print("Loading data...")
     data = PDBData()
-    data.import_pdb(datafiles)
+    data.import_pdb(datafiles, topology=topology)
     fix_terminal and data.fix_terminal()
     atoms_select and data.atomselect(atoms=['CA', 'C', 'CB', 'N', 'O'])
     data.prepare_dataset()
