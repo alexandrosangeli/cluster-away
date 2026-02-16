@@ -50,13 +50,30 @@ def main(args):
     trainer.set_autoencoder(autoencoder_of_choice, **model_kwargs)
     trainer.prepare_optimiser()
 
-    fit_results = trainer.run_until_converge(
+    trainer.run(
+        epochs=10,
+        log_filename="log.dat",
+        log_folder=f"{output_dir}/logs",
+        checkpoint_folder=f"{output_dir}/checkpoints",
+        verbose=True,
+    )
+
+    physics_inter_weight = trainer.get_scale(
+        ref_loss=trainer.results_epoch["mse_loss"],
+        tar_loss=trainer.results_epoch["inter_physics_loss"],
+        scale_scale=physics_weight
+        )
+
+    trainer.update_hyperparameters(physics_inter_weight=hysics_inter_weight)
+
+    trainer.run_until_converge(
         patience=patience,
         log_filename="log.dat",
         log_folder=f"{output_dir}/logs",
         checkpoint_folder=f"{output_dir}/checkpoints",
         verbose=True,
     )
+
     print(fit_results)
     print("Script complete. Exiting.")
     return 0
